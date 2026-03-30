@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./packages/adapter-utils" },
+    { "path": "./packages/shared" },
+    { "path": "./packages/db" },
+    { "path": "./packages/adapters/gemini-local" },
+    { "path": "./server" },
+    { "path": "./ui" },
+    { "path": "./cli" }
+  ]
+}
