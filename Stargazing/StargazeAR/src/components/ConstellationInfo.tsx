@@ -78,26 +78,32 @@ export default function ConstellationInfo({
   const [displayedSelected, setDisplayedSelected] =
     useState<ProjectedConstellation | null>(selected);
 
+  const stateRef = useRef({ isOpen, onClose });
+
+  useEffect(() => {
+    stateRef.current = { isOpen, onClose };
+  }, [isOpen, onClose]);
+
   const panResponder = useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_, gestureState) =>
-          isOpen &&
+        onMoveShouldSetPanResponder: (_event: any, gestureState: any) =>
+          stateRef.current.isOpen &&
           gestureState.dy > SWIPE_CAPTURE_DELTA &&
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx),
         onPanResponderGrant: () => {
           translateY.stopAnimation();
           opacity.stopAnimation();
         },
-        onPanResponderMove: (_, gestureState) => {
+        onPanResponderMove: (_event: any, gestureState: any) => {
           const nextTranslateY = Math.max(0, gestureState.dy);
           translateY.setValue(nextTranslateY);
           opacity.setValue(Math.max(0.78, 1 - nextTranslateY / 240));
         },
-        onPanResponderRelease: (_, gestureState) => {
+        onPanResponderRelease: (_event: any, gestureState: any) => {
           if (gestureState.dy >= SWIPE_DOWN_THRESHOLD) {
-            onClose();
+            stateRef.current.onClose();
             return;
           }
 
@@ -135,7 +141,7 @@ export default function ConstellationInfo({
           ]).start();
         },
       }),
-    [isOpen, onClose, opacity, translateY],
+    [opacity, translateY],
   );
 
   useEffect(() => {
@@ -198,7 +204,7 @@ export default function ConstellationInfo({
       duration: 120,
       easing: Easing.inOut(Easing.quad),
       useNativeDriver: true,
-    }).start(({ finished }) => {
+    }).start(({ finished }: { finished: boolean }) => {
       if (!finished) {
         return;
       }
@@ -215,7 +221,7 @@ export default function ConstellationInfo({
   }, [contentOpacity, displayedSelected, isOpen, selected]);
 
   const visibleStarsCount = displayedSelected
-    ? displayedSelected.projectedStars.filter((star) => star.isVisible).length
+    ? displayedSelected.projectedStars.filter((star: any) => star.isVisible).length
     : 0;
   const brightestStar = useMemo(
     () =>

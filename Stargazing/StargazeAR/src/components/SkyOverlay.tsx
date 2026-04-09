@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -20,7 +20,7 @@ type SkyOverlayProps = {
 const HORIZON_BAND_HEIGHT_RATIO = 0.26;
 const HORIZON_BAND_START_RATIO = 1 - HORIZON_BAND_HEIGHT_RATIO;
 
-export default function SkyOverlay({ isInfoPanelOpen }: SkyOverlayProps) {
+export default React.memo(function SkyOverlay({ isInfoPanelOpen }: SkyOverlayProps) {
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
 
@@ -97,8 +97,7 @@ export default function SkyOverlay({ isInfoPanelOpen }: SkyOverlayProps) {
       />
     </View>
   );
-}
-
+});
 const styles = StyleSheet.create({
   root: {
     ...StyleSheet.absoluteFillObject,

@@ -16,9 +16,7 @@ export const SCREEN_MEDIUM_MAX = 840;
 const MIN_BOTTOM_SAFE_OFFSET = 12;
 const ESTIMATED_HINT_HEIGHT = 84;
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
+import { clamp } from './math';
 
 export function getLayoutMetrics(params: {
   screenWidth: number;

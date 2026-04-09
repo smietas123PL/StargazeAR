@@ -6,44 +6,23 @@ import { useEffect, useRef, useState } from 'react';
  */
 export default function useThrottledValue<T>(value: T, delay: number): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
-  const valueRef = useRef(value);
-  const lastUpdatedRef = useRef(Date.now());
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastExecuted = useRef<number>(Date.now());
 
   useEffect(() => {
-    valueRef.current = value;
-    const now = Date.now();
-    const timeSinceLastUpdate = now - lastUpdatedRef.current;
+    const timeSinceLastUpdate = Date.now() - lastExecuted.current;
 
     if (timeSinceLastUpdate >= delay) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
       setThrottledValue(value);
-      lastUpdatedRef.current = now;
-    } else if (!timeoutRef.current) {
-      timeoutRef.current = setTimeout(() => {
-        setThrottledValue(valueRef.current);
-        lastUpdatedRef.current = Date.now();
-        timeoutRef.current = null;
+      lastExecuted.current = Date.now();
+    } else {
+      const timeoutId = setTimeout(() => {
+        setThrottledValue(value);
+        lastExecuted.current = Date.now();
       }, delay - timeSinceLastUpdate);
+
+      return () => clearTimeout(timeoutId);
     }
-
-    return () => {
-      // Note: we don't clear the timeout on typical dependencies unmount because
-      // we want the final trailing value to flush if the component stays mounted.
-      // But for total cleanup, we should clear it if the component fully unmounts.
-    };
   }, [value, delay]);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
 
   return throttledValue;
 }

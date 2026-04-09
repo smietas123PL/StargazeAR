@@ -39,3 +39,7 @@ export declare function getCurrentPositionAsync(options?: {
 export declare function watchHeadingAsync(
   callback: (heading: LocationHeadingObject) => void,
 ): Promise<LocationSubscription>;
+export declare function watchPositionAsync(
+  options: { accuracy?: number; timeInterval?: number; distanceInterval?: number; },
+  callback: (position: LocationObject) => void,
+): Promise<LocationSubscription>;

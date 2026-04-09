@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 import {
   hasSeenOnboarding,
@@ -71,27 +71,27 @@ export default function useOnboarding({
     [headingCalibrationLevel, isHeadingReliable],
   );
 
-  function clearOnboardingTimeout() {
+  const clearOnboardingTimeout = useCallback(() => {
     if (onboardingTimeoutRef.current) {
       clearTimeout(onboardingTimeoutRef.current);
       onboardingTimeoutRef.current = null;
     }
-  }
+  }, []);
 
-  function persistOnboardingSeen() {
+  const persistOnboardingSeen = useCallback(() => {
     if (hasPersistedOnboardingRef.current) {
       return;
     }
 
     hasPersistedOnboardingRef.current = true;
     void markOnboardingSeen();
-  }
+  }, []);
 
-  function dismissOnboarding() {
+  const dismissOnboarding = useCallback(() => {
     clearOnboardingTimeout();
     setIsOnboardingHintVisible(false);
     persistOnboardingSeen();
-  }
+  }, [clearOnboardingTimeout, persistOnboardingSeen]);
 
   useEffect(() => {
     let isMounted = true;
@@ -153,7 +153,7 @@ export default function useOnboarding({
         clearTimeout(onboardingTimeoutRef.current);
       }
     };
-  }, [isArSessionActive, isStorageHydrated]);
+  }, [isArSessionActive, isStorageHydrated, clearOnboardingTimeout, dismissOnboarding]);
 
   useEffect(() => {
     if (!isArSessionActive || !isOnboardingHintVisible) {
@@ -216,13 +216,14 @@ export default function useOnboarding({
     isInfoPanelOpen,
     isOnboardingHintVisible,
     selectedConstellationId,
+    dismissOnboarding,
   ]);
 
   useEffect(() => {
     return () => {
       clearOnboardingTimeout();
     };
-  }, []);
+  }, [clearOnboardingTimeout]);
 
   return {
     dismissOnboarding,

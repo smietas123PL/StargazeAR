@@ -56,22 +56,35 @@ export default function useLocation(): UseLocationResult {
           }
         }
 
-        const currentPosition = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        });
+        let locationSubscription: Location.LocationSubscription | null = null;
 
-        if (!isMounted) {
-          return;
+        locationSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.Balanced,
+            timeInterval: 10000,
+            distanceInterval: 10,
+          },
+          (currentPosition: Location.LocationObject) => {
+            if (!isMounted) {
+              locationSubscription?.remove();
+              return;
+            }
+
+            setLocation({
+              latitude: currentPosition.coords.latitude,
+              longitude: currentPosition.coords.longitude,
+              altitude: currentPosition.coords.altitude ?? null,
+              timestamp: currentPosition.timestamp ?? Date.now(),
+            });
+            setErrorKind(null);
+            setIsLoading(false);
+          }
+        );
+
+        if (!isMounted && locationSubscription) {
+          locationSubscription.remove();
         }
 
-        setLocation({
-          latitude: currentPosition.coords.latitude,
-          longitude: currentPosition.coords.longitude,
-          altitude: currentPosition.coords.altitude ?? null,
-          timestamp: currentPosition.timestamp ?? Date.now(),
-        });
-        setErrorKind(null);
-        setIsLoading(false);
       } catch {
         if (!isMounted) {
           return;

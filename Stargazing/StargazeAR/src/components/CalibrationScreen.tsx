@@ -13,6 +13,7 @@ import { ZIndex } from '../constants/zIndex';
 import { useTheme } from '../context/ThemeContext';
 import { DEFAULT_CALIBRATION } from '../constants/defaults';
 import { notifySuccess, notifyWarning, tapLight } from '../utils/haptics';
+import { clamp } from '../utils/math';
 import type { CalibrationData } from '../types';
 
 type CalibrationScreenProps = {
@@ -81,9 +82,6 @@ export default function CalibrationScreen({
     };
   }, []);
 
-  function clamp(value: number, min: number, max: number) {
-    return Math.min(max, Math.max(min, value));
-  }
 
   function updateField(
     field: AdjustableField,
@@ -510,8 +508,8 @@ function FooterButton({
         accessibilityHint={
           label === 'Anuluj'
             ? 'Zamyka ekran kalibracji bez zapisywania zmian.'
-            : label === 'PrzywrÃ³Ä‡ domyÅ›lne'
-              ? 'Przywraca domyslne wartosci kalibracji.'
+            : label === 'Przywróć domyślne'
+              ? 'Przywraca domyślne wartości kalibracji.'
               : 'Zapisuje aktualne ustawienia kalibracji.'
         }
         accessibilityLabel={label}

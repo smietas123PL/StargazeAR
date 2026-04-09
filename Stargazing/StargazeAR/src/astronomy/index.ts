@@ -10,9 +10,20 @@ import type {
   UserLocation,
 } from '../types';
 
-/**
- * Główny orkiestrator obliczeń astronomicznych dla aktualnego widoku.
- */
+const LST_CACHE_TTL_MS = 10000;
+
+let localSkyCache: {
+  expireAt: number;
+  latitudeDeg: number;
+  longitudeDeg: number;
+  lst: number;
+  constellations: Map<string, {
+    centerAlt: number;
+    centerAz: number;
+    stars: Map<string, { alt: number; az: number }>;
+  }>;
+} | null = null;
+
 export function computeVisibleConstellations(params: {
   location: UserLocation;
   orientation: DeviceOrientation;
@@ -30,22 +41,67 @@ export function computeVisibleConstellations(params: {
     date = new Date(),
   } = params;
 
-  const lst = localSiderealTime(date, location.longitude);
+  const timestamp = date.getTime();
+
+  if (
+    !localSkyCache ||
+    timestamp > localSkyCache.expireAt ||
+    localSkyCache.latitudeDeg !== location.latitude ||
+    localSkyCache.longitudeDeg !== location.longitude
+  ) {
+    const lst = localSiderealTime(date, location.longitude);
+    const skyMap = new Map();
+
+    for (const constellation of CONSTELLATIONS) {
+      const centerAltAz = raDecToAltAz({
+        raDeg: constellation.centerRa,
+        decDeg: constellation.centerDec,
+        lst,
+        latitudeDeg: location.latitude,
+      });
+
+      const correctedCenterAltitude =
+        centerAltAz.altitude + atmosphericRefraction(centerAltAz.altitude);
+
+      const starsMap = new Map();
+      for (const star of constellation.stars) {
+        const altAz = raDecToAltAz({
+          raDeg: star.ra,
+          decDeg: star.dec,
+          lst,
+          latitudeDeg: location.latitude,
+        });
+
+        const correctedAltitude =
+          altAz.altitude + atmosphericRefraction(altAz.altitude);
+
+        starsMap.set(star.id, { alt: correctedAltitude, az: altAz.azimuth });
+      }
+
+      skyMap.set(constellation.id, {
+        centerAlt: correctedCenterAltitude,
+        centerAz: centerAltAz.azimuth,
+        stars: starsMap,
+      });
+    }
+
+    localSkyCache = {
+      expireAt: timestamp + LST_CACHE_TTL_MS,
+      latitudeDeg: location.latitude,
+      longitudeDeg: location.longitude,
+      lst,
+      constellations: skyMap,
+    };
+  }
+
+  const cachedSky = localSkyCache.constellations;
 
   return CONSTELLATIONS.map((constellation) => {
-    const centerAltAz = raDecToAltAz({
-      raDeg: constellation.centerRa,
-      decDeg: constellation.centerDec,
-      lst,
-      latitudeDeg: location.latitude,
-    });
-
-    const correctedCenterAltitude =
-      centerAltAz.altitude + atmosphericRefraction(centerAltAz.altitude);
+    const skyData = cachedSky.get(constellation.id)!;
 
     const centerScreen = altAzToScreenXY({
-      objectAltitude: correctedCenterAltitude,
-      objectAzimuth: centerAltAz.azimuth,
+      objectAltitude: skyData.centerAlt,
+      objectAzimuth: skyData.centerAz,
       phoneHeading: orientation.heading,
       phonePitch: orientation.pitch,
       screenWidth,
@@ -54,19 +110,11 @@ export function computeVisibleConstellations(params: {
     });
 
     const projectedStars: ProjectedStar[] = constellation.stars.map((star) => {
-      const altAz = raDecToAltAz({
-        raDeg: star.ra,
-        decDeg: star.dec,
-        lst,
-        latitudeDeg: location.latitude,
-      });
-
-      const correctedAltitude =
-        altAz.altitude + atmosphericRefraction(altAz.altitude);
+      const starSky = skyData.stars.get(star.id)!;
 
       const screen = altAzToScreenXY({
-        objectAltitude: correctedAltitude,
-        objectAzimuth: altAz.azimuth,
+        objectAltitude: starSky.alt,
+        objectAzimuth: starSky.az,
         phoneHeading: orientation.heading,
         phonePitch: orientation.pitch,
         screenWidth,
@@ -77,7 +125,7 @@ export function computeVisibleConstellations(params: {
       return {
         star,
         screen: { x: screen.x, y: screen.y },
-        isVisible: screen.isVisible && correctedAltitude > -5,
+        isVisible: screen.isVisible && starSky.alt > -5,
       };
     });
 
@@ -88,8 +136,8 @@ export function computeVisibleConstellations(params: {
       centerScreen: { x: centerScreen.x, y: centerScreen.y },
       projectedStars,
       isAnyStarVisible,
-      altitude: correctedCenterAltitude,
-      azimuth: centerAltAz.azimuth,
+      altitude: skyData.centerAlt,
+      azimuth: skyData.centerAz,
     };
   }).sort((a, b) => b.altitude - a.altitude);
 }

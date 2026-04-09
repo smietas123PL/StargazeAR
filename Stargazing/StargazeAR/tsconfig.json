@@ -1,12 +1,9 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "moduleResolution": "bundler",
     "paths": {
       "expo": [
         "src/types/shims/expo.d.ts"
@@ -22,6 +19,9 @@
       ],
       "expo-sensors": [
         "src/types/shims/expo-sensors.d.ts"
+      ],
+      "@/*": [
+        "src/*"
       ]
     }
   },
@@ -40,5 +40,6 @@
     "scripts",
     "stargazear_old",
     "node_modules"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

@@ -1,4 +1,5 @@
 import { hourAngle } from './sidereal';
+import { clamp } from '../utils/math';
 
 /**
  * Zamienia stopnie na radiany.
@@ -22,12 +23,7 @@ function normalizeAngle(deg: number): number {
   return normalized < 0 ? normalized + 360 : normalized;
 }
 
-/**
- * Ogranicza wartość do bezpiecznego zakresu wejściowego funkcji trygonometrycznych.
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
+
 
 /**
  * Konwertuje współrzędne RA/Dec na wysokość i azymut.

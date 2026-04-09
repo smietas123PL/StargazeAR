@@ -50,21 +50,6 @@ function getLocationBannerCopy(errorKind: LocationErrorKind | null) {
   };
 }
 
-function getLocationDebugLabel(errorKind: LocationErrorKind | null, hasLocation: boolean) {
-  if (hasLocation) {
-    return 'GPS urządzenia';
-  }
-
-  if (errorKind === 'permission_denied') {
-    return 'brak uprawnień GPS';
-  }
-
-  if (errorKind === 'location_failed') {
-    return 'GPS niedostępny';
-  }
-
-  return 'fallback Warszawa';
-}
 
 export default function ControlsContainer({
   currentScreen,
@@ -133,12 +118,6 @@ export default function ControlsContainer({
     return null;
   }
 
-  const visibleConstellationsCount = constellations.filter(
-    (item) => item.isAnyStarVisible,
-  ).length;
-  const locationSourceLabel = isMockEnabled
-    ? 'mock Warszawa'
-    : getLocationDebugLabel(locationErrorKind, location !== null);
   const locationBannerCopy = getLocationBannerCopy(locationErrorKind);
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const HEADING_DRIFT_PITCH_STABLE_MAX = 20;
 const HEADING_DRIFT_STEP_MIN = 0.03;
@@ -89,8 +89,5 @@ export default function useHeadingDrift({
     headingDriftRef.current += direction * driftStep;
   }, [heading, isMockEnabled, pitch]);
 
-  return useMemo(
-    () => normalizeHeading(heading - headingDriftRef.current),
-    [heading],
-  );
+  return normalizeHeading(heading - headingDriftRef.current);
 }
