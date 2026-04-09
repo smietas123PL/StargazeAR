@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
 import { instanceSettingsApi } from "@/api/instanceSettings";
+import { Button } from "@/components/ui/button";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
+import { useLanguage } from "../context/LanguageContext";
 import { queryKeys } from "../lib/queryKeys";
+import { translateText } from "../lib/i18n";
 import { cn } from "../lib/utils";
 
 export function InstanceGeneralSettings() {
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { language, setLanguage } = useLanguage();
   const queryClient = useQueryClient();
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -31,12 +35,12 @@ export function InstanceGeneralSettings() {
       await queryClient.invalidateQueries({ queryKey: queryKeys.instance.generalSettings });
     },
     onError: (error) => {
-      setActionError(error instanceof Error ? error.message : "Failed to update general settings.");
+      setActionError(error instanceof Error ? error.message : translateText("Failed to update general settings."));
     },
   });
 
   if (generalQuery.isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading general settings...</div>;
+    return <div className="text-sm text-muted-foreground">{translateText("Loading general settings...")}</div>;
   }
 
   if (generalQuery.error) {
@@ -44,7 +48,7 @@ export function InstanceGeneralSettings() {
       <div className="text-sm text-destructive">
         {generalQuery.error instanceof Error
           ? generalQuery.error.message
-          : "Failed to load general settings."}
+          : translateText("Failed to load general settings.")}
       </div>
     );
   }
@@ -56,10 +60,10 @@ export function InstanceGeneralSettings() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-lg font-semibold">General</h1>
+          <h1 className="text-lg font-semibold">{translateText("General")}</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Configure instance-wide defaults that affect how operator-visible logs are displayed.
+          {translateText("Configure instance-wide defaults that affect how operator-visible logs are displayed.")}
         </p>
       </div>
 
@@ -72,17 +76,15 @@ export function InstanceGeneralSettings() {
       <section className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1.5">
-            <h2 className="text-sm font-semibold">Censor username in logs</h2>
+            <h2 className="text-sm font-semibold">{translateText("Censor username in logs")}</h2>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Hide the username segment in home-directory paths and similar operator-visible log output. Standalone
-              username mentions outside of paths are not yet masked in the live transcript view. This is off by
-              default.
+              {translateText("Hide the username segment in home-directory paths and similar operator-visible log output. Standalone username mentions outside of paths are not yet masked in the live transcript view. This is off by default.")}
             </p>
           </div>
           <button
             type="button"
             data-slot="toggle"
-            aria-label="Toggle username log censoring"
+            aria-label={translateText("Toggle username log censoring")}
             disabled={toggleMutation.isPending}
             className={cn(
               "relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-60",
@@ -97,6 +99,40 @@ export function InstanceGeneralSettings() {
               )}
             />
           </button>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1.5">
+            <h2 className="text-sm font-semibold">{translateText("Interface language")}</h2>
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              {translateText("Choose the display language for the board UI. This preference is stored locally in this browser.")}
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 p-1">
+              <Button
+                type="button"
+                size="sm"
+                variant={language === "pl" ? "default" : "ghost"}
+                onClick={() => setLanguage("pl")}
+              >
+                Polski
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={language === "en" ? "default" : "ghost"}
+                onClick={() => setLanguage("en")}
+              >
+                English
+              </Button>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {translateText("Current language")}: {language === "pl" ? "Polski" : "English"}
+            </span>
+          </div>
         </div>
       </section>
     </div>

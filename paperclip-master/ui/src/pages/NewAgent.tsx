@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@/lib/router";
 import { useCompany } from "../context/CompanyContext";
@@ -298,7 +298,7 @@ export function NewAgent() {
               disabled={!name.trim() || createAgent.isPending}
               onClick={handleSubmit}
             >
-              {createAgent.isPending ? "Creating…" : "Create agent"}
+              {createAgent.isPending ? "Creating..." : "Create agent"}
             </Button>
           </div>
         </div>
@@ -306,3 +306,4 @@ export function NewAgent() {
     </div>
   );
 }
+

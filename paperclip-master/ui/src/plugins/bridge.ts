@@ -1,5 +1,5 @@
-/**
- * Plugin UI bridge runtime — concrete implementations of the bridge hooks.
+﻿/**
+ * Plugin UI bridge runtime  -  concrete implementations of the bridge hooks.
  *
  * Plugin UI bundles import `usePluginData`, `usePluginAction`, and
  * `useHostContext` from `@paperclipai/plugin-sdk/ui`.  Those are type-only
@@ -7,8 +7,8 @@
  * by injecting this bridge runtime into the plugin's module scope.
  *
  * The bridge runtime communicates with plugin workers via HTTP REST endpoints:
- * - `POST /api/plugins/:pluginId/data/:key`     — proxies `getData` RPC
- * - `POST /api/plugins/:pluginId/actions/:key`   — proxies `performAction` RPC
+ * - `POST /api/plugins/:pluginId/data/:key`      -  proxies `getData` RPC
+ * - `POST /api/plugins/:pluginId/actions/:key`    -  proxies `performAction` RPC
  *
  * ## How it works
  *
@@ -20,9 +20,9 @@
  *    look up the current plugin context from a React context provider and
  *    delegate to the appropriate bridge instance.
  *
- * @see PLUGIN_SPEC.md §13.8 — `getData`
- * @see PLUGIN_SPEC.md §13.9 — `performAction`
- * @see PLUGIN_SPEC.md §19.7 — Error Propagation Through The Bridge
+ * @see PLUGIN_SPEC.md Â§13.8  -  `getData`
+ * @see PLUGIN_SPEC.md Â§13.9  -  `performAction`
+ * @see PLUGIN_SPEC.md Â§19.7  -  Error Propagation Through The Bridge
  */
 
 import { createContext, useCallback, useContext, useRef, useState, useEffect } from "react";
@@ -117,7 +117,7 @@ export interface PluginRenderEnvironmentContext {
 }
 
 // ---------------------------------------------------------------------------
-// Bridge context — React context for plugin identity and host scope
+// Bridge context  -  React context for plugin identity and host scope
 // ---------------------------------------------------------------------------
 
 export type PluginBridgeContextValue = {
@@ -187,7 +187,7 @@ function extractBridgeError(err: unknown): PluginBridgeError {
 }
 
 // ---------------------------------------------------------------------------
-// usePluginData — concrete implementation
+// usePluginData  -  concrete implementation
 // ---------------------------------------------------------------------------
 
 /**
@@ -305,7 +305,7 @@ export function usePluginData<T = unknown>(
 }
 
 // ---------------------------------------------------------------------------
-// usePluginAction — concrete implementation
+// usePluginAction  -  concrete implementation
 // ---------------------------------------------------------------------------
 
 /**
@@ -350,7 +350,7 @@ export function usePluginAction(key: string): PluginActionFn {
 }
 
 // ---------------------------------------------------------------------------
-// useHostContext — concrete implementation
+// useHostContext  -  concrete implementation
 // ---------------------------------------------------------------------------
 
 /**
@@ -365,7 +365,7 @@ export function useHostContext(): PluginHostContext {
 }
 
 // ---------------------------------------------------------------------------
-// usePluginToast — concrete implementation
+// usePluginToast  -  concrete implementation
 // ---------------------------------------------------------------------------
 
 export function usePluginToast(): PluginToastFn {
@@ -377,7 +377,7 @@ export function usePluginToast(): PluginToastFn {
 }
 
 // ---------------------------------------------------------------------------
-// usePluginStream — concrete implementation
+// usePluginStream  -  concrete implementation
 // ---------------------------------------------------------------------------
 
 export interface PluginStreamResult<T = unknown> {
@@ -473,3 +473,4 @@ export function usePluginStream<T = unknown>(
 
   return { events, lastEvent, connecting, connected, error, close };
 }
+

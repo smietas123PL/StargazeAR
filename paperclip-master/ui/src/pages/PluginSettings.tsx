@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Puzzle, ArrowLeft, ShieldAlert, ActivitySquare, CheckCircle, XCircle, Loader2, Clock, Cpu, Webhook, CalendarClock, AlertTriangle } from "lucide-react";
 import { useCompany } from "@/context/CompanyContext";
@@ -41,21 +41,21 @@ import {
  * - Plugin-contributed settings UI via `<PluginSlotOutlet type="settingsPage" />`.
  *
  * Data flow:
- * - `GET /api/plugins/:pluginId` — plugin record (refreshes on mount).
- * - `GET /api/plugins/:pluginId/health` — health diagnostics (polling).
+ * - `GET /api/plugins/:pluginId`  -  plugin record (refreshes on mount).
+ * - `GET /api/plugins/:pluginId/health`  -  health diagnostics (polling).
  *   Only fetched when `plugin.status === "ready"`.
- * - `GET /api/plugins/:pluginId/dashboard` — aggregated runtime dashboard data (polling).
- * - `GET /api/plugins/:pluginId/config` — current config values.
- * - `POST /api/plugins/:pluginId/config` — save config values.
- * - `POST /api/plugins/:pluginId/config/test` — test configuration.
+ * - `GET /api/plugins/:pluginId/dashboard`  -  aggregated runtime dashboard data (polling).
+ * - `GET /api/plugins/:pluginId/config`  -  current config values.
+ * - `POST /api/plugins/:pluginId/config`  -  save config values.
+ * - `POST /api/plugins/:pluginId/config/test`  -  test configuration.
  *
  * URL params:
- * - `companyPrefix` — the company slug (for breadcrumb links).
- * - `pluginId` — UUID of the plugin to display.
+ * - `companyPrefix`  -  the company slug (for breadcrumb links).
+ * - `pluginId`  -  UUID of the plugin to display.
  *
- * @see PluginManager — parent list page.
- * @see doc/plugins/PLUGIN_SPEC.md §13 — Plugin Health Checks.
- * @see doc/plugins/PLUGIN_SPEC.md §19.8 — Plugin Settings UI.
+ * @see PluginManager  -  parent list page.
+ * @see doc/plugins/PLUGIN_SPEC.md Â§13  -  Plugin Health Checks.
+ * @see doc/plugins/PLUGIN_SPEC.md Â§19.8  -  Plugin Settings UI.
  */
 export function PluginSettings() {
   const { selectedCompany, selectedCompanyId } = useCompany();
@@ -275,7 +275,7 @@ export function PluginSettings() {
                             </div>
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">PID</span>
-                              <span className="font-mono text-xs">{dashboardData.worker.pid ?? "—"}</span>
+                              <span className="font-mono text-xs">{dashboardData.worker.pid ?? " - "}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Uptime</span>
@@ -541,7 +541,7 @@ export function PluginSettings() {
 }
 
 // ---------------------------------------------------------------------------
-// PluginConfigForm — auto-generated form for instanceConfigSchema
+// PluginConfigForm  -  auto-generated form for instanceConfigSchema
 // ---------------------------------------------------------------------------
 
 interface PluginConfigFormProps {
@@ -549,7 +549,7 @@ interface PluginConfigFormProps {
   schema: JsonSchemaNode;
   initialValues?: Record<string, unknown>;
   isLoading?: boolean;
-  /** Current plugin lifecycle status — "Test Configuration" only available when `ready`. */
+  /** Current plugin lifecycle status  -  "Test Configuration" only available when `ready`. */
   pluginStatus?: string;
   /** Whether the plugin worker implements `validateConfig`. */
   supportsConfigTest?: boolean;
@@ -559,7 +559,7 @@ interface PluginConfigFormProps {
  * Inner component that manages form state, validation, save, and "Test Configuration"
  * for the auto-generated plugin config form.
  *
- * Separated from PluginSettings to isolate re-render scope — only the form
+ * Separated from PluginSettings to isolate re-render scope  -  only the form
  * re-renders on field changes, not the entire page.
  */
 function PluginConfigForm({ pluginId, schema, initialValues, isLoading, pluginStatus, supportsConfigTest }: PluginConfigFormProps) {
@@ -571,7 +571,7 @@ function PluginConfigForm({ pluginId, schema, initialValues, isLoading, pluginSt
     ...(initialValues ?? {}),
   }));
 
-  // Sync when saved config loads asynchronously — only on first load so we
+  // Sync when saved config loads asynchronously  -  only on first load so we
   // don't overwrite in-progress user edits if the query refetches (e.g. on
   // window focus).
   const hasHydratedRef = useRef(false);
@@ -747,7 +747,7 @@ function PluginConfigForm({ pluginId, schema, initialValues, isLoading, pluginSt
  * Format an uptime value (in milliseconds) to a human-readable string.
  */
 function formatUptime(uptimeMs: number | null): string {
-  if (uptimeMs == null) return "—";
+  if (uptimeMs == null) return " - ";
   const totalSeconds = Math.floor(uptimeMs / 1000);
   if (totalSeconds < 60) return `${totalSeconds}s`;
   const minutes = Math.floor(totalSeconds / 60);
@@ -834,3 +834,4 @@ function DeliveryStatusDot({ status }: { status: string }) {
     />
   );
 }
+

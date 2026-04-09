@@ -1,8 +1,8 @@
-/**
- * @fileoverview Plugin Manager page — admin UI for discovering,
+﻿/**
+ * @fileoverview Plugin Manager page  -  admin UI for discovering,
  * installing, enabling/disabling, and uninstalling plugins.
  *
- * @see PLUGIN_SPEC.md §9 — Plugin Marketplace / Manager
+ * @see PLUGIN_SPEC.md Â§9  -  Plugin Marketplace / Manager
  */
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -57,8 +57,8 @@ function getPluginErrorSummary(plugin: PluginRecord): string {
  * - Mutations (install / uninstall / enable / disable) invalidate
  *   `queryKeys.plugins.all` so the list refreshes automatically.
  *
- * @see PluginSettings — linked from the Settings icon on each plugin row.
- * @see doc/plugins/PLUGIN_SPEC.md §3 — Plugin Lifecycle for status semantics.
+ * @see PluginSettings  -  linked from the Settings icon on each plugin row.
+ * @see doc/plugins/PLUGIN_SPEC.md Â§3  -  Plugin Lifecycle for status semantics.
  */
 export function PluginManager() {
   const { selectedCompany } = useCompany();
@@ -339,7 +339,7 @@ export function PluginManager() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground mt-0.5 truncate" title={plugin.packageName}>
-                        {plugin.packageName} · v{plugin.manifestJson.version ?? plugin.version}
+                        {plugin.packageName}  ·  v{plugin.manifestJson.version ?? plugin.version}
                       </p>
                     </div>
                     <p className="text-sm text-muted-foreground truncate mt-0.5" title={plugin.manifestJson.description}>
@@ -507,3 +507,4 @@ export function PluginManager() {
     </div>
   );
 }
+

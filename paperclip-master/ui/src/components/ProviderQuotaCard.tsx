@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import type { CostByProviderModel, CostWindowSpendRow, QuotaWindow } from "@paperclipai/shared";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,7 +48,7 @@ export function ProviderQuotaCard({
   quotaSource = null,
   quotaLoading = false,
 }: ProviderQuotaCardProps) {
-  // single-pass aggregation over rows — memoized so the 8 derived values are not
+  // single-pass aggregation over rows  -  memoized so the 8 derived values are not
   // recomputed on every parent render tick (providers tab polls every 30s, and each
   // card is mounted twice: once in the "all" tab grid and once in its per-provider tab).
   const totals = useMemo(() => {
@@ -139,11 +139,11 @@ export function ProviderQuotaCard({
             </CardTitle>
             <CardDescription className="text-xs mt-0.5">
               <span className="font-mono">{formatTokens(totalInputTokens)}</span> in
-              {" · "}
+              {"  ·  "}
               <span className="font-mono">{formatTokens(totalOutputTokens)}</span> out
               {(totalApiRuns > 0 || totalSubRuns > 0) && (
                 <span className="ml-1.5">
-                  ·{" "}
+                   · {" "}
                   {totalApiRuns > 0 && `~${totalApiRuns} api`}
                   {totalApiRuns > 0 && totalSubRuns > 0 && " / "}
                   {totalSubRuns > 0 && `~${totalSubRuns} sub`}
@@ -178,7 +178,7 @@ export function ProviderQuotaCard({
           </div>
         )}
 
-        {/* rolling window consumption — always shown when data is available */}
+        {/* rolling window consumption  -  always shown when data is available */}
         {windowRows.length > 0 && (
           <>
             <div className="border-t border-border" />
@@ -217,7 +217,7 @@ export function ProviderQuotaCard({
           </>
         )}
 
-        {/* subscription usage — shown when any subscription-billed runs exist */}
+        {/* subscription usage  -  shown when any subscription-billed runs exist */}
         {totalSubRuns > 0 && (
           <>
             <div className="border-t border-border" />
@@ -227,15 +227,15 @@ export function ProviderQuotaCard({
               </p>
               <p className="text-xs text-muted-foreground">
                 <span className="font-mono text-foreground">{totalSubRuns}</span> runs
-                {" · "}
+                {"  ·  "}
                 {totalSubTokens > 0 && (
                   <>
                     <span className="font-mono text-foreground">{formatTokens(totalSubTokens)}</span> total
-                    {" · "}
+                    {"  ·  "}
                   </>
                 )}
                 <span className="font-mono text-foreground">{formatTokens(totalSubInputTokens)}</span> in
-                {" · "}
+                {"  ·  "}
                 <span className="font-mono text-foreground">{formatTokens(totalSubOutputTokens)}</span> out
               </p>
               {subSharePct > 0 && (
@@ -255,7 +255,7 @@ export function ProviderQuotaCard({
           </>
         )}
 
-        {/* model breakdown — always shown, with token-share bars */}
+        {/* model breakdown  -  always shown, with token-share bars */}
         {rows.length > 0 && (
           <>
             <div className="border-t border-border" />
@@ -273,7 +273,7 @@ export function ProviderQuotaCard({
                           {row.model}
                         </span>
                         <span className="text-[11px] text-muted-foreground truncate block">
-                          {providerDisplayName(row.biller)} · {billingTypeDisplayName(row.billingType)}
+                          {providerDisplayName(row.biller)}  ·  {billingTypeDisplayName(row.billingType)}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 shrink-0 tabular-nums text-xs">
@@ -290,7 +290,7 @@ export function ProviderQuotaCard({
                         style={{ width: `${tokenPct}%` }}
                         title={`${Math.round(tokenPct)}% of provider tokens`}
                       />
-                      {/* cost share overlay — narrower, opaque, shows relative cost weight */}
+                      {/* cost share overlay  -  narrower, opaque, shows relative cost weight */}
                       <div
                         className="absolute inset-y-0 left-0 bg-primary/85 transition-[width] duration-150"
                         style={{ width: `${costPct}%` }}
@@ -304,7 +304,7 @@ export function ProviderQuotaCard({
           </>
         )}
 
-        {/* subscription quota windows from provider api — shown when data is available */}
+        {/* subscription quota windows from provider api  -  shown when data is available */}
         {showSubscriptionQuotaSection && (
           <>
             <div className="border-t border-border" />
@@ -414,3 +414,4 @@ function QuotaPanelSkeleton() {
     </div>
   );
 }
+

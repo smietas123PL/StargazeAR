@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@/lib/router";
 import { ChevronDown, ChevronRight, MoreHorizontal, Play, Plus, Repeat } from "lucide-react";
@@ -551,7 +551,7 @@ export function Routines() {
                             <span className="truncate">{projectById.get(routine.projectId)?.name ?? "Unknown"}</span>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground"> - </span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">
@@ -566,7 +566,7 @@ export function Routines() {
                             <span className="text-xs text-muted-foreground">Unknown</span>
                           );
                         })() : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground"> - </span>
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-muted-foreground">
@@ -659,3 +659,4 @@ export function Routines() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import type { CostByBiller, CostByProviderModel } from "@paperclipai/shared";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QuotaBar } from "./QuotaBar";
@@ -63,11 +63,11 @@ export function BillerSpendCard({
             </CardTitle>
             <CardDescription className="text-xs mt-0.5">
               <span className="font-mono">{formatTokens(row.inputTokens + row.cachedInputTokens)}</span> in
-              {" · "}
+              {"  ·  "}
               <span className="font-mono">{formatTokens(row.outputTokens)}</span> out
-              {" · "}
+              {"  ·  "}
               {row.providerCount} provider{row.providerCount === 1 ? "" : "s"}
-              {" · "}
+              {"  ·  "}
               {row.modelCount} model{row.modelCount === 1 ? "" : "s"}
             </CardDescription>
           </div>
@@ -89,11 +89,11 @@ export function BillerSpendCard({
 
         <div className="text-xs text-muted-foreground">
           {row.apiRunCount > 0 ? `${row.apiRunCount} metered run${row.apiRunCount === 1 ? "" : "s"}` : "0 metered runs"}
-          {" · "}
+          {"  ·  "}
           {row.subscriptionRunCount > 0
             ? `${row.subscriptionRunCount} subscription run${row.subscriptionRunCount === 1 ? "" : "s"}`
             : "0 subscription runs"}
-          {" · "}
+          {"  ·  "}
           {formatCents(weekSpendCents)} this week
         </div>
 
@@ -143,3 +143,4 @@ export function BillerSpendCard({
     </Card>
   );
 }
+

@@ -1,29 +1,29 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef } from "react";
 
-const CHARS = [" ", ".", "·", "▪", "▫", "○"] as const;
+const CHARS = [" ", ".", " · ", "â–ª", "â–«", "â—‹"] as const;
 const TARGET_FPS = 24;
 const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
 
 const PAPERCLIP_SPRITES = [
   [
-    "  ╭────╮ ",
-    " ╭╯╭──╮│ ",
-    " │ │  ││ ",
-    " │ │  ││ ",
-    " │ │  ││ ",
-    " │ │  ││ ",
-    " │ ╰──╯│ ",
-    " ╰─────╯ ",
+    "  â•­â”€â”€â”€â”€â•® ",
+    " â•­â•¯â•­â”€â”€â•®â”‚ ",
+    " â”‚ â”‚  â”‚â”‚ ",
+    " â”‚ â”‚  â”‚â”‚ ",
+    " â”‚ â”‚  â”‚â”‚ ",
+    " â”‚ â”‚  â”‚â”‚ ",
+    " â”‚ â•°â”€â”€â•¯â”‚ ",
+    " â•°â”€â”€â”€â”€â”€â•¯ ",
   ],
   [
-    " ╭─────╮ ",
-    " │╭──╮╰╮ ",
-    " ││  │ │ ",
-    " ││  │ │ ",
-    " ││  │ │ ",
-    " ││  │ │ ",
-    " │╰──╯ │ ",
-    " ╰────╯  ",
+    " â•­â”€â”€â”€â”€â”€â•® ",
+    " â”‚â•­â”€â”€â•®â•°â•® ",
+    " â”‚â”‚  â”‚ â”‚ ",
+    " â”‚â”‚  â”‚ â”‚ ",
+    " â”‚â”‚  â”‚ â”‚ ",
+    " â”‚â”‚  â”‚ â”‚ ",
+    " â”‚â•°â”€â”€â•¯ â”‚ ",
+    " â•°â”€â”€â”€â”€â•¯  ",
   ],
 ] as const;
 
@@ -198,7 +198,7 @@ export function AsciiArtAnimation() {
           const col = baseCol + sc;
           if (col < 0 || col >= cols) continue;
           const idx = row * cols + col;
-          const stroke = ch === "│" || ch === "─" ? 0.8 : 0.92;
+          const stroke = ch === "â”‚" || ch === "â”€" ? 0.8 : 0.92;
           trail[idx] = Math.max(trail[idx] ?? 0, alpha * stroke);
           clipMask[idx] = ch.charCodeAt(0);
         }
@@ -346,3 +346,4 @@ export function AsciiArtAnimation() {
     />
   );
 }
+

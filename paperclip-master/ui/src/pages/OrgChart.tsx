@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+﻿import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
 import { agentsApi, type OrgNode } from "../api/agents";
@@ -20,7 +20,7 @@ const GAP_X = 32;
 const GAP_Y = 80;
 const PADDING = 60;
 
-// ── Tree layout types ───────────────────────────────────────────────────
+// â”€â”€ Tree layout types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface LayoutNode {
   id: string;
@@ -32,7 +32,7 @@ interface LayoutNode {
   children: LayoutNode[];
 }
 
-// ── Layout algorithm ────────────────────────────────────────────────────
+// â”€â”€ Layout algorithm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /** Compute the width each subtree needs. */
 function subtreeWidth(node: OrgNode): number {
@@ -101,7 +101,7 @@ function flattenLayout(nodes: LayoutNode[]): LayoutNode[] {
   return result;
 }
 
-/** Collect all parent→child edges. */
+/** Collect all parent->child edges. */
 function collectEdges(nodes: LayoutNode[]): Array<{ parent: LayoutNode; child: LayoutNode }> {
   const edges: Array<{ parent: LayoutNode; child: LayoutNode }> = [];
   function walk(n: LayoutNode) {
@@ -114,7 +114,7 @@ function collectEdges(nodes: LayoutNode[]): Array<{ parent: LayoutNode; child: L
   return edges;
 }
 
-// ── Status dot colors (raw hex for SVG) ─────────────────────────────────
+// â”€â”€ Status dot colors (raw hex for SVG) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const adapterLabels: Record<string, string> = {
   claude_local: "Claude",
@@ -138,7 +138,7 @@ const statusDotColor: Record<string, string> = {
 };
 const defaultDotColor = "#a3a3a3";
 
-// ── Main component ──────────────────────────────────────────────────────
+// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function OrgChart() {
   const { selectedCompanyId } = useCompany();
@@ -445,3 +445,4 @@ const roleLabels: Record<string, string> = AGENT_ROLE_LABELS;
 function roleLabel(role: string): string {
   return roleLabels[role] ?? role;
 }
+

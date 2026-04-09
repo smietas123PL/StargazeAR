@@ -1,14 +1,14 @@
-import { cn } from "../lib/utils";
+﻿import { cn } from "../lib/utils";
 
 interface HermesIconProps {
   className?: string;
 }
 
 /**
- * Hermes caduceus icon — winged staff with two intertwined serpents.
+ * Hermes caduceus icon  -  winged staff with two intertwined serpents.
  * Replaces the generic Zap icon for the hermes_local adapter type.
  *
- * ⚕️ inspired but as the proper caduceus (Hermes' symbol): staff + two snakes + wings.
+ * âš•ï¸ inspired but as the proper caduceus (Hermes' symbol): staff + two snakes + wings.
  */
 export function HermesIcon({ className }: HermesIconProps) {
   return (
@@ -41,3 +41,4 @@ export function HermesIcon({ className }: HermesIconProps) {
     </svg>
   );
 }
+

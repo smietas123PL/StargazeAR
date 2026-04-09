@@ -1,4 +1,4 @@
-import {
+﻿import {
   forwardRef,
   useCallback,
   useEffect,
@@ -560,7 +560,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
         plugins={plugins}
       />
 
-      {/* Mention dropdown — rendered via portal so it isn't clipped by overflow containers */}
+      {/* Mention dropdown  -  rendered via portal so it isn't clipped by overflow containers */}
       {mentionActive && filteredMentions.length > 0 &&
         createPortal(
           <div
@@ -622,3 +622,4 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
     </div>
   );
 });
+

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+﻿import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AdapterEnvironmentTestResult } from "@paperclipai/shared";
 import { useLocation, useNavigate, useParams } from "@/lib/router";
@@ -135,7 +135,7 @@ export function OnboardingWizard() {
     el.style.height = el.scrollHeight + "px";
   }, []);
 
-  // Created entity IDs — pre-populate from existing company when skipping step 1
+  // Created entity IDs  -  pre-populate from existing company when skipping step 1
   const [createdCompanyId, setCreatedCompanyId] = useState<string | null>(
     existingCompanyId ?? null
   );
@@ -607,7 +607,7 @@ export function OnboardingWizard() {
       }}
     >
       <DialogPortal>
-        {/* Plain div instead of DialogOverlay — Radix's overlay wraps in
+        {/* Plain div instead of DialogOverlay  -  Radix's overlay wraps in
             RemoveScroll which blocks wheel events on our custom (non-DialogContent)
             scroll container. A plain div preserves the background without scroll-locking. */}
         <div className="fixed inset-0 z-50 bg-background" />
@@ -621,7 +621,7 @@ export function OnboardingWizard() {
             <span className="sr-only">Close</span>
           </button>
 
-          {/* Left half — form */}
+          {/* Left half  -  form */}
           <div
             className={cn(
               "w-full flex flex-col overflow-y-auto transition-[width] duration-500 ease-in-out",
@@ -1010,7 +1010,7 @@ export function OnboardingWizard() {
                     <div>
                       <h3 className="font-medium">Give it something to do</h3>
                       <p className="text-xs text-muted-foreground">
-                        Give your agent a small task to start with — a bug fix,
+                        Give your agent a small task to start with  -  a bug fix,
                         a research question, writing a script.
                       </p>
                     </div>
@@ -1175,7 +1175,7 @@ export function OnboardingWizard() {
             </div>
           </div>
 
-          {/* Right half — ASCII art (hidden on mobile) */}
+          {/* Right half  -  ASCII art (hidden on mobile) */}
           <div
             className={cn(
               "hidden md:block overflow-hidden bg-[#1d1d1d] transition-[width,opacity] duration-500 ease-in-out",
@@ -1225,7 +1225,7 @@ function AdapterEnvironmentResult({
             <span className="font-medium uppercase tracking-wide opacity-80">
               {check.level}
             </span>
-            <span className="mx-1 opacity-60">·</span>
+            <span className="mx-1 opacity-60"> · </span>
             <span>{check.message}</span>
             {check.detail && (
               <span className="block opacity-75 break-all">
@@ -1243,3 +1243,4 @@ function AdapterEnvironmentResult({
     </div>
   );
 }
+

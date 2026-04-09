@@ -1,4 +1,4 @@
-import { isValidElement, useEffect, useId, useState, type ReactNode } from "react";
+﻿import { isValidElement, useEffect, useId, useState, type ReactNode } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "../lib/utils";
@@ -74,7 +74,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
   }, [darkMode, renderId, source]);
 
   return (
-    <div className="paperclip-mermaid">
+    <div className="paperclip-mermaid" data-i18n-skip="true">
       {svg ? (
         <div dangerouslySetInnerHTML={{ __html: svg }} />
       ) : (
@@ -138,6 +138,7 @@ export function MarkdownBody({ children, className, resolveImageSrc }: MarkdownB
 
   return (
     <div
+      data-i18n-skip="true"
       className={cn(
         "paperclip-markdown prose prose-sm max-w-none break-words overflow-hidden",
         theme === "dark" && "prose-invert",

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+﻿import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 export interface Breadcrumb {
   label: string;
@@ -24,7 +24,7 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
       document.title = "Paperclip";
     } else {
       const parts = [...breadcrumbs].reverse().map((b) => b.label);
-      document.title = `${parts.join(" · ")} · Paperclip`;
+      document.title = `${parts.join("  ·  ")}  ·  Paperclip`;
     }
   }, [breadcrumbs]);
 
@@ -42,3 +42,4 @@ export function useBreadcrumbs() {
   }
   return ctx;
 }
+

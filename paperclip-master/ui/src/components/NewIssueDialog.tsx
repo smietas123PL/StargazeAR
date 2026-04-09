@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo, type ChangeEvent, type DragEvent } from "react";
+﻿import { useState, useEffect, useRef, useCallback, useMemo, type ChangeEvent, type DragEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pickTextColorForSolidBg } from "@/lib/color-contrast";
 import { useDialog } from "../context/DialogContext";
@@ -885,7 +885,7 @@ export function NewIssueDialog() {
           // Radix Dialog's modal DismissableLayer calls preventDefault() on
           // pointerdown events that originate outside the Dialog DOM tree.
           // Popover portals render at the body level (outside the Dialog), so
-          // touch events on popover content get their default prevented — which
+          // touch events on popover content get their default prevented  -  which
           // kills scroll gesture recognition on mobile.  Telling Radix "this
           // event is handled" skips that preventDefault, restoring touch scroll.
           const target = event.detail.originalEvent.target as HTMLElement | null;
@@ -1001,7 +1001,7 @@ export function NewIssueDialog() {
               if (e.key === "Tab" && !e.shiftKey) {
                 e.preventDefault();
                 if (assigneeValue) {
-                  // Assignee already set — skip to project or description
+                  // Assignee already set  -  skip to project or description
                   if (projectId) {
                     descriptionEditorRef.current?.focus();
                   } else {
@@ -1147,7 +1147,7 @@ export function NewIssueDialog() {
                   <option value="">Choose an existing workspace</option>
                   {deduplicatedReusableWorkspaces.map((workspace) => (
                     <option key={workspace.id} value={workspace.id}>
-                      {workspace.name} · {workspace.status} · {workspace.branchName ?? workspace.cwd ?? workspace.id.slice(0, 8)}
+                      {workspace.name}  ·  {workspace.status}  ·  {workspace.branchName ?? workspace.cwd ?? workspace.id.slice(0, 8)}
                     </option>
                   ))}
                 </select>
@@ -1273,7 +1273,7 @@ export function NewIssueDialog() {
                           <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
                             <FileText className="h-3.5 w-3.5" />
                             <span>{file.title || file.file.name}</span>
-                            <span>•</span>
+                            <span>â€¢</span>
                             <span>{formatFileSize(file.file)}</span>
                           </div>
                         </div>
@@ -1305,7 +1305,7 @@ export function NewIssueDialog() {
                             <span className="truncate text-sm">{file.file.name}</span>
                           </div>
                           <div className="mt-1 text-[11px] text-muted-foreground">
-                            {file.file.type || "application/octet-stream"} • {formatFileSize(file.file)}
+                            {file.file.type || "application/octet-stream"} â€¢ {formatFileSize(file.file)}
                           </div>
                         </div>
                         <Button
@@ -1471,3 +1471,4 @@ export function NewIssueDialog() {
     </Dialog>
   );
 }
+

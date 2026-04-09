@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
 import { agentsApi, type OrgNode } from "../api/agents";
@@ -266,7 +266,7 @@ export function Agents() {
                         {adapterLabels[agent.adapterType] ?? agent.adapterType}
                       </span>
                       <span className="text-xs text-muted-foreground w-16 text-right">
-                        {agent.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : "—"}
+                        {agent.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : " - "}
                       </span>
                       <span className="w-20 flex justify-end">
                         <StatusBadge status={agent.status} />
@@ -367,7 +367,7 @@ function OrgTreeNode({
                   {adapterLabels[agent.adapterType] ?? agent.adapterType}
                 </span>
                 <span className="text-xs text-muted-foreground w-16 text-right">
-                  {agent.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : "—"}
+                  {agent.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : " - "}
                 </span>
               </>
             )}
@@ -413,3 +413,4 @@ function LiveRunIndicator({
     </Link>
   );
 }
+

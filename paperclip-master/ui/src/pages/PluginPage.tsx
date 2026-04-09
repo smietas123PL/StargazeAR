@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+﻿import { useEffect, useMemo } from "react";
 import { Link, Navigate, useParams } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
 import { useCompany } from "@/context/CompanyContext";
@@ -15,8 +15,8 @@ import { NotFoundPage } from "./NotFound";
  * `/:companyPrefix/plugins/:pluginId` when the plugin declares a page slot
  * and is enabled for that company.
  *
- * @see doc/plugins/PLUGIN_SPEC.md §19.2 — Company-Context Routes
- * @see doc/plugins/PLUGIN_SPEC.md §24.4 — Company-Context Plugin Page
+ * @see doc/plugins/PLUGIN_SPEC.md Â§19.2  -  Company-Context Routes
+ * @see doc/plugins/PLUGIN_SPEC.md Â§24.4  -  Company-Context Plugin Page
  */
 export function PluginPage() {
   const { companyPrefix: routeCompanyPrefix, pluginId, pluginRoutePath } = useParams<{
@@ -110,7 +110,7 @@ export function PluginPage() {
   }
 
   if (!contributions) {
-    return <div className="text-sm text-muted-foreground">Loading…</div>;
+    return <div className="text-sm text-muted-foreground">Loading...</div>;
   }
 
   if (!pluginId && pluginRoutePath) {
@@ -154,3 +154,4 @@ export function PluginPage() {
     </div>
   );
 }
+

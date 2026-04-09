@@ -12,7 +12,7 @@ export const ACTIONABLE_APPROVAL_STATUSES = new Set(["pending", "revision_reques
 export const DISMISSED_KEY = "paperclip:inbox:dismissed";
 export const READ_ITEMS_KEY = "paperclip:inbox:read-items";
 export const INBOX_LAST_TAB_KEY = "paperclip:inbox:last-tab";
-export type InboxTab = "mine" | "recent" | "unread" | "all";
+export type InboxTab = "mine" | "all";
 export type InboxApprovalFilter = "all" | "actionable" | "resolved";
 export type InboxWorkItem =
   | {
@@ -82,7 +82,7 @@ export function saveReadInboxItems(ids: Set<string>) {
 export function loadLastInboxTab(): InboxTab {
   try {
     const raw = localStorage.getItem(INBOX_LAST_TAB_KEY);
-    if (raw === "all" || raw === "unread" || raw === "recent" || raw === "mine") return raw;
+    if (raw === "all" || raw === "mine") return raw;
     if (raw === "new") return "mine";
     return "mine";
   } catch {
@@ -178,10 +178,7 @@ export function getApprovalsForTab(
     (a, b) => normalizeTimestamp(b.updatedAt) - normalizeTimestamp(a.updatedAt),
   );
 
-  if (tab === "mine" || tab === "recent") return sortedApprovals;
-  if (tab === "unread") {
-    return sortedApprovals.filter((approval) => ACTIONABLE_APPROVAL_STATUSES.has(approval.status));
-  }
+  if (tab === "mine") return sortedApprovals;
   if (filter === "all") return sortedApprovals;
 
   return sortedApprovals.filter((approval) => {
@@ -247,21 +244,15 @@ export function shouldShowInboxSection({
   tab,
   hasItems,
   showOnMine,
-  showOnRecent,
-  showOnUnread,
   showOnAll,
 }: {
   tab: InboxTab;
   hasItems: boolean;
   showOnMine: boolean;
-  showOnRecent: boolean;
-  showOnUnread: boolean;
   showOnAll: boolean;
 }): boolean {
   if (!hasItems) return false;
   if (tab === "mine") return showOnMine;
-  if (tab === "recent") return showOnRecent;
-  if (tab === "unread") return showOnUnread;
   return showOnAll;
 }
 

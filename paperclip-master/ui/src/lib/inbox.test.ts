@@ -270,15 +270,6 @@ describe("inbox helpers", () => {
       "approval-approved",
       "approval-pending",
     ]);
-    expect(getApprovalsForTab(approvals, "recent", "all").map((approval) => approval.id)).toEqual([
-      "approval-revision",
-      "approval-approved",
-      "approval-pending",
-    ]);
-    expect(getApprovalsForTab(approvals, "unread", "all").map((approval) => approval.id)).toEqual([
-      "approval-revision",
-      "approval-pending",
-    ]);
     expect(getApprovalsForTab(approvals, "all", "resolved").map((approval) => approval.id)).toEqual([
       "approval-approved",
     ]);
@@ -345,34 +336,20 @@ describe("inbox helpers", () => {
     ]);
   });
 
-  it("can include sections on recent without forcing them to be unread", () => {
+  it("can include sections correctly on mine tab", () => {
     expect(
       shouldShowInboxSection({
         tab: "mine",
         hasItems: true,
         showOnMine: true,
-        showOnRecent: false,
-        showOnUnread: false,
         showOnAll: false,
       }),
     ).toBe(true);
     expect(
       shouldShowInboxSection({
-        tab: "recent",
+        tab: "mine",
         hasItems: true,
         showOnMine: false,
-        showOnRecent: true,
-        showOnUnread: false,
-        showOnAll: false,
-      }),
-    ).toBe(true);
-    expect(
-      shouldShowInboxSection({
-        tab: "unread",
-        hasItems: true,
-        showOnMine: true,
-        showOnRecent: true,
-        showOnUnread: false,
         showOnAll: false,
       }),
     ).toBe(false);
@@ -406,8 +383,6 @@ describe("inbox helpers", () => {
 
   it("enables swipe archive only on the mine tab", () => {
     expect(isMineInboxTab("mine")).toBe(true);
-    expect(isMineInboxTab("recent")).toBe(false);
-    expect(isMineInboxTab("unread")).toBe(false);
     expect(isMineInboxTab("all")).toBe(false);
   });
 

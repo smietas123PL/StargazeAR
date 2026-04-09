@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "@/lib/router";
 import { authApi } from "../api/auth";
@@ -63,14 +63,14 @@ export function AuthPage() {
   if (isSessionLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 flex bg-background">
-      {/* Left half — form */}
+      {/* Left half  -  form */}
       <div className="w-full md:w-1/2 flex flex-col overflow-y-auto">
         <div className="w-full max-w-md mx-auto my-auto px-8 py-12">
           <div className="flex items-center gap-2 mb-8">
@@ -148,7 +148,7 @@ export function AuthPage() {
               className={`w-full ${!canSubmit && !mutation.isPending ? "opacity-50" : ""}`}
             >
               {mutation.isPending
-                ? "Working…"
+                ? "Working..."
                 : mode === "sign_in"
                   ? "Sign In"
                   : "Create Account"}
@@ -171,10 +171,11 @@ export function AuthPage() {
         </div>
       </div>
 
-      {/* Right half — ASCII art animation (hidden on mobile) */}
+      {/* Right half  -  ASCII art animation (hidden on mobile) */}
       <div className="hidden md:block w-1/2 overflow-hidden">
         <AsciiArtAnimation />
       </div>
     </div>
   );
 }
+

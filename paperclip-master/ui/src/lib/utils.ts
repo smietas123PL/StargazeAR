@@ -1,7 +1,8 @@
-import { type ClassValue, clsx } from "clsx";
+﻿import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { deriveAgentUrlKey, deriveProjectUrlKey } from "@paperclipai/shared";
 import type { BillingType, FinanceDirection, FinanceEventKind } from "@paperclipai/shared";
+import { getCurrentLanguage, getLocaleForLanguage } from "./i18n";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,7 +13,7 @@ export function formatCents(cents: number): string {
 }
 
 export function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString("en-US", {
+  return new Date(date).toLocaleDateString(getLocaleForLanguage(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -20,7 +21,7 @@ export function formatDate(date: Date | string): string {
 }
 
 export function formatDateTime(date: Date | string): string {
-  return new Date(date).toLocaleString("en-US", {
+  return new Date(date).toLocaleString(getLocaleForLanguage(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -33,13 +34,15 @@ export function relativeTime(date: Date | string): string {
   const now = Date.now();
   const then = new Date(date).getTime();
   const diffSec = Math.round((now - then) / 1000);
-  if (diffSec < 60) return "just now";
+  const language = getCurrentLanguage();
+
+  if (diffSec < 60) return language === "pl" ? "przed chwilą" : "just now";
   const diffMin = Math.round(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 60) return language === "pl" ? `${diffMin} min temu` : `${diffMin}m ago`;
   const diffHr = Math.round(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return language === "pl" ? `${diffHr} godz. temu` : `${diffHr}h ago`;
   const diffDay = Math.round(diffHr / 24);
-  if (diffDay < 30) return `${diffDay}d ago`;
+  if (diffDay < 30) return language === "pl" ? `${diffDay} dni temu` : `${diffDay}d ago`;
   return formatDate(date);
 }
 

@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Document ID: {userId}
+    // Fields: uid (string), email (string), displayName (string, optional), plan (string), createdAt (number)
+    //
+    // Collection: sessions
+    // Document ID: {sessionId}
+    // Fields: id (string), userId (string), title (string), question (string), status (string), createdAt (number), completedAt (number, optional), fullContext (string, optional), fileUrls (list)
+    //
+    // Collection: sessionMessages
+    // Document ID: {messageId}
+    // Fields: sessionId (string), userId (string), role (string), content (string), order (number), timestamp (number)
+    //
+    // Collection: councilResults
+    // Document ID: {resultId}
+    // Fields: sessionId (string), userId (string), chairmanVerdict (string), peerReview (string), advisors (map)
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function isRequestOwner() {
+      return isAuthenticated() && request.auth.uid == request.resource.data.userId;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.uid == userId;
+      allow update: if isOwner(userId) && request.resource.data.uid == resource.data.uid;
+      allow delete: if false;
+    }
+
+    match /sessions/{sessionId} {
+      allow read: if isDocOwner();
+      allow create: if isRequestOwner();
+      allow update: if isDocOwner() && isRequestOwner();
+      allow delete: if isDocOwner();
+      
+      match /messages/{messageId} {
+        allow read: if isDocOwner();
+        allow create: if isRequestOwner();
+        allow update: if isDocOwner() && isRequestOwner();
+        allow delete: if isDocOwner();
+      }
+    }
+
+    match /councilResults/{resultId} {
+      allow read: if isDocOwner();
+      allow create: if isRequestOwner();
+      allow update: if isDocOwner() && isRequestOwner();
+      allow delete: if isDocOwner();
+    }
+  }
+}

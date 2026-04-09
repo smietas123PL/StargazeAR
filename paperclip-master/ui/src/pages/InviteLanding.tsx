@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "@/lib/router";
 import { accessApi } from "../api/access";
@@ -286,7 +286,7 @@ export function InviteLandingPage() {
           onClick={() => acceptMutation.mutate()}
         >
           {acceptMutation.isPending
-            ? "Submitting…"
+            ? "Submitting..."
             : invite.inviteType === "bootstrap_ceo"
               ? "Accept bootstrap invite"
               : "Submit join request"}
@@ -295,3 +295,4 @@ export function InviteLandingPage() {
     </div>
   );
 }
+

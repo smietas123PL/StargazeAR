@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Canonical status & priority color definitions.
  *
  * Every component that renders a status indicator (StatusIcon, StatusBadge,
@@ -36,7 +36,7 @@ export const issueStatusText: Record<string, string> = {
 export const issueStatusTextDefault = "text-muted-foreground";
 
 // ---------------------------------------------------------------------------
-// Badge colors — used by StatusBadge for all entity types
+// Badge colors  -  used by StatusBadge for all entity types
 // ---------------------------------------------------------------------------
 
 export const statusBadge: Record<string, string> = {
@@ -66,7 +66,7 @@ export const statusBadge: Record<string, string> = {
   approved: "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300",
   rejected: "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300",
 
-  // Issue statuses — consistent hues with issueStatusIcon above
+  // Issue statuses  -  consistent hues with issueStatusIcon above
   backlog: "bg-muted text-muted-foreground",
   todo: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
   in_progress: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300",
@@ -79,7 +79,7 @@ export const statusBadge: Record<string, string> = {
 export const statusBadgeDefault = "bg-muted text-muted-foreground";
 
 // ---------------------------------------------------------------------------
-// Agent status dot — solid background for small indicator dots
+// Agent status dot  -  solid background for small indicator dots
 // ---------------------------------------------------------------------------
 
 export const agentStatusDot: Record<string, string> = {
@@ -106,3 +106,4 @@ export const priorityColor: Record<string, string> = {
 };
 
 export const priorityColorDefault = "text-yellow-600 dark:text-yellow-400";
+

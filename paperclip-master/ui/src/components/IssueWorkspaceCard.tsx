@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/lib/router";
 import type { Issue, ExecutionWorkspace } from "@paperclipai/shared";
 import { useQuery } from "@tanstack/react-query";
@@ -369,7 +369,7 @@ export function IssueWorkspaceCard({ issue, project, onUpdate }: IssueWorkspaceC
                 to={currentWorkspaceLink}
                 className="text-[11px] text-muted-foreground hover:text-foreground hover:underline"
               >
-                View workspace details →
+                View workspace details
               </Link>
             </div>
           )}
@@ -412,7 +412,7 @@ export function IssueWorkspaceCard({ issue, project, onUpdate }: IssueWorkspaceC
               <option value="">Choose an existing workspace</option>
               {deduplicatedReusableWorkspaces.map((w) => (
                 <option key={w.id} value={w.id}>
-                  {w.name} · {w.status} · {w.branchName ?? w.cwd ?? w.id.slice(0, 8)}
+                  {w.name}  ·  {w.status}  ·  {w.branchName ?? w.cwd ?? w.id.slice(0, 8)}
                 </option>
               ))}
             </select>
@@ -433,7 +433,7 @@ export function IssueWorkspaceCard({ issue, project, onUpdate }: IssueWorkspaceC
                 ) : (
                   <BreakablePath text={workspace.name} />
                 )}
-                {" · "}
+                {"  ·  "}
                 {workspace.status}
               </div>
             </div>
@@ -443,3 +443,5 @@ export function IssueWorkspaceCard({ issue, project, onUpdate }: IssueWorkspaceC
     </div>
   );
 }
+
+

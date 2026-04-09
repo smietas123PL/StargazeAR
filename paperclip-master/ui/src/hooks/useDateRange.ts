@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 
 export type DatePreset = "mtd" | "7d" | "30d" | "ytd" | "all" | "custom";
 
@@ -15,7 +15,7 @@ export const PRESET_KEYS: DatePreset[] = ["mtd", "7d", "30d", "ytd", "all", "cus
 
 // note: computeRange is called inside a useMemo that re-evaluates once per minute
 // (driven by minuteTick). this means sliding windows (7d, 30d) advance their upper
-// bound at most once per minute — acceptable for a cost dashboard.
+// bound at most once per minute  -  acceptable for a cost dashboard.
 function computeRange(preset: DatePreset): { from: string; to: string } {
   const now = new Date();
   const to = now.toISOString();
@@ -118,3 +118,4 @@ export function useDateRange(): UseDateRangeResult {
     customReady,
   };
 }
+

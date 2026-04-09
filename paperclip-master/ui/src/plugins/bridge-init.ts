@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Plugin bridge initialization.
  *
  * Registers the host's React instances and bridge hook implementations
@@ -8,8 +8,8 @@
  * Call `initPluginBridge()` once during app startup (in `main.tsx`), before
  * any plugin UI modules are loaded.
  *
- * @see PLUGIN_SPEC.md §19.0.1 — Plugin UI SDK
- * @see PLUGIN_SPEC.md §19.0.2 — Bundle Isolation
+ * @see PLUGIN_SPEC.md Â§19.0.1  -  Plugin UI SDK
+ * @see PLUGIN_SPEC.md Â§19.0.2  -  Bundle Isolation
  */
 
 import {
@@ -67,3 +67,4 @@ export function initPluginBridge(
     },
   };
 }
+

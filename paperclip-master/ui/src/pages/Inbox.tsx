@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { INBOX_MINE_ISSUE_STATUS_FILTER } from "@paperclipai/shared";
@@ -40,6 +40,7 @@ import {
   X,
   RotateCcw,
   UserPlus,
+  ListFilter,
 } from "lucide-react";
 import { PageTabBar } from "../components/PageTabBar";
 import type { Approval, HeartbeatRun, Issue, JoinRequest } from "@paperclipai/shared";
@@ -258,7 +259,7 @@ export function FailedRunInboxRow({
                   {issue.title}
                 </>
               ) : (
-                <>Failed run{linkedAgentName ? ` — ${linkedAgentName}` : ""}</>
+                <>Failed run{linkedAgentName ? `  -  ${linkedAgentName}` : ""}</>
               )}
             </span>
             <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
@@ -279,7 +280,7 @@ export function FailedRunInboxRow({
             disabled={isRetrying}
           >
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-            {isRetrying ? "Retrying…" : "Retry"}
+            {isRetrying ? "Retrying..." : "Retry"}
           </Button>
           {!showUnreadSlot && (
             <button
@@ -303,7 +304,7 @@ export function FailedRunInboxRow({
           disabled={isRetrying}
         >
           <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-          {isRetrying ? "Retrying…" : "Retry"}
+          {isRetrying ? "Retrying..." : "Retry"}
         </Button>
         {!showUnreadSlot && (
           <button
@@ -602,9 +603,11 @@ export function Inbox() {
   const { dismissed, dismiss } = useDismissedInboxItems();
   const { readItems, markRead: markItemRead, markUnread: markItemUnread } = useReadInboxItems();
 
+  const [showFilters, setShowFilters] = useState(false);
+
   const pathSegment = location.pathname.split("/").pop() ?? "mine";
   const tab: InboxTab =
-    pathSegment === "mine" || pathSegment === "recent" || pathSegment === "all" || pathSegment === "unread"
+    pathSegment === "mine" || pathSegment === "all"
       ? pathSegment
       : "mine";
   const canArchiveFromTab = isMineInboxTab(tab);
@@ -714,10 +717,9 @@ export function Inbox() {
   const issuesToRender = useMemo(
     () => {
       if (tab === "mine") return mineIssues;
-      if (tab === "unread") return unreadTouchedIssues;
       return touchedIssues;
     },
-    [tab, mineIssues, touchedIssues, unreadTouchedIssues],
+    [tab, mineIssues, touchedIssues],
   );
 
   const agentById = useMemo(() => {
@@ -1059,7 +1061,7 @@ export function Inbox() {
     navigate,
   };
 
-  // Keyboard shortcuts (mail-client style) — single stable listener using refs
+  // Keyboard shortcuts (mail-client style)  -  single stable listener using refs
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
@@ -1189,8 +1191,6 @@ export function Inbox() {
     tab,
     hasItems: hasAlerts,
     showOnMine: hasAlerts,
-    showOnRecent: hasAlerts,
-    showOnUnread: hasAlerts,
     showOnAll: showAlertsCategory && hasAlerts,
   });
 
@@ -1223,13 +1223,8 @@ export function Inbox() {
             items={[
               {
                 value: "mine",
-                label: "Mine",
+                label: "For You",
               },
-              {
-                value: "recent",
-                label: "Recent",
-              },
-              { value: "unread", label: "Unread" },
               { value: "all", label: "All" },
             ]}
           />
@@ -1245,45 +1240,60 @@ export function Inbox() {
               onClick={() => markAllReadMutation.mutate(unreadIssueIds)}
               disabled={markAllReadMutation.isPending}
             >
-              {markAllReadMutation.isPending ? "Marking…" : "Mark all as read"}
+              {markAllReadMutation.isPending ? "Marking..." : "Mark all as read"}
             </Button>
           )}
         </div>
       </div>
 
       {tab === "all" && (
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            value={allCategoryFilter}
-            onValueChange={(value) => setAllCategoryFilter(value as InboxCategoryFilter)}
-          >
-            <SelectTrigger className="h-8 w-[170px] text-xs">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="everything">All categories</SelectItem>
-              <SelectItem value="issues_i_touched">My recent issues</SelectItem>
-              <SelectItem value="join_requests">Join requests</SelectItem>
-              <SelectItem value="approvals">Approvals</SelectItem>
-              <SelectItem value="failed_runs">Failed runs</SelectItem>
-              <SelectItem value="alerts">Alerts</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {showApprovalsCategory && (
-            <Select
-              value={allApprovalFilter}
-              onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-start">
+            <Button
+              variant={showFilters ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="h-8 gap-2 font-normal text-muted-foreground"
             >
-              <SelectTrigger className="h-8 w-[170px] text-xs">
-                <SelectValue placeholder="Approval status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All approval statuses</SelectItem>
-                <SelectItem value="actionable">Needs action</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
-              </SelectContent>
-            </Select>
+              <ListFilter className="h-4 w-4" />
+              Filters
+            </Button>
+          </div>
+          {showFilters && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/20 p-3">
+              <Select
+                value={allCategoryFilter}
+                onValueChange={(value) => setAllCategoryFilter(value as InboxCategoryFilter)}
+              >
+                <SelectTrigger className="h-8 w-[170px] bg-background text-xs">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="everything">All categories</SelectItem>
+                  <SelectItem value="issues_i_touched">My recent issues</SelectItem>
+                  <SelectItem value="join_requests">Join requests</SelectItem>
+                  <SelectItem value="approvals">Approvals</SelectItem>
+                  <SelectItem value="failed_runs">Failed runs</SelectItem>
+                  <SelectItem value="alerts">Alerts</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {showApprovalsCategory && (
+                <Select
+                  value={allApprovalFilter}
+                  onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
+                >
+                  <SelectTrigger className="h-8 w-[170px] bg-background text-xs">
+                    <SelectValue placeholder="Approval status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All approval statuses</SelectItem>
+                    <SelectItem value="actionable">Needs action</SelectItem>
+                    <SelectItem value="resolved">Resolved</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -1301,11 +1311,7 @@ export function Inbox() {
           message={
             tab === "mine"
               ? "Inbox zero."
-              : tab === "unread"
-              ? "No new inbox items."
-              : tab === "recent"
-                ? "No recent inbox items."
-                : "No inbox items match these filters."
+              : "No inbox items match these filters."
           }
         />
       )}
@@ -1577,3 +1583,4 @@ export function Inbox() {
     </div>
   );
 }
+

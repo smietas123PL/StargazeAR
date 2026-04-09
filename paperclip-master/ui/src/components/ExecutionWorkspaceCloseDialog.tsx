@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ExecutionWorkspace } from "@paperclipai/shared";
 import { Link } from "@/lib/router";
 import { Loader2 } from "lucide-react";
@@ -135,7 +135,7 @@ export function ExecutionWorkspaceCloseDialog({
                     <div key={issue.id} className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm">
                       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
                         <Link to={issueUrl(issue)} className="min-w-0 break-words font-medium hover:underline">
-                          {issue.identifier ?? issue.id} · {issue.title}
+                          {issue.identifier ?? issue.id}  ·  {issue.title}
                         </Link>
                         <span className="text-xs text-muted-foreground">{issue.status}</span>
                       </div>
@@ -215,7 +215,7 @@ export function ExecutionWorkspaceCloseDialog({
                     <div key={issue.id} className="rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm">
                       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
                         <Link to={issueUrl(issue)} className="min-w-0 break-words font-medium hover:underline">
-                          {issue.identifier ?? issue.id} · {issue.title}
+                          {issue.identifier ?? issue.id}  ·  {issue.title}
                         </Link>
                         <span className="text-xs text-muted-foreground">{issue.status}</span>
                       </div>
@@ -233,7 +233,7 @@ export function ExecutionWorkspaceCloseDialog({
                     <div key={service.id} className="rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm">
                       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
                         <span className="font-medium">{service.serviceName}</span>
-                        <span className="text-xs text-muted-foreground">{service.status} · {service.lifecycle}</span>
+                        <span className="text-xs text-muted-foreground">{service.status}  ·  {service.lifecycle}</span>
                       </div>
                       <div className="mt-1 break-words text-xs text-muted-foreground">
                         {service.url ?? service.command ?? service.cwd ?? "No additional details"}
@@ -279,7 +279,7 @@ export function ExecutionWorkspaceCloseDialog({
                 Repo root: <span className="font-mono break-all">{readiness.git.repoRoot}</span>
                 {readiness.git.workspacePath ? (
                   <>
-                    {" · "}Workspace path: <span className="font-mono break-all">{readiness.git.workspacePath}</span>
+                    {"  ·  "}Workspace path: <span className="font-mono break-all">{readiness.git.workspacePath}</span>
                   </>
                 ) : null}
               </div>
@@ -312,3 +312,4 @@ export function ExecutionWorkspaceCloseDialog({
     </Dialog>
   );
 }
+

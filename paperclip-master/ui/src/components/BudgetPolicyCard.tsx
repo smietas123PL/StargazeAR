@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { BudgetPolicySummary } from "@paperclipai/shared";
 import { AlertTriangle, PauseCircle, ShieldAlert, Wallet } from "lucide-react";
 import { cn, formatCents } from "../lib/utils";
@@ -68,7 +68,7 @@ export function BudgetPolicyCard({
           {summary.amount > 0 ? formatCents(summary.amount) : "Disabled"}
         </div>
         <div className="mt-1 text-xs text-muted-foreground">
-          Soft alert at {summary.warnPercent}%{summary.paused && summary.pauseReason ? ` · ${summary.pauseReason} pause` : ""}
+          Soft alert at {summary.warnPercent}%{summary.paused && summary.pauseReason ? `  ·  ${summary.pauseReason} pause` : ""}
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@ export function BudgetPolicyCard({
           {summary.amount > 0 ? formatCents(summary.amount) : "Disabled"}
         </div>
         <div className="mt-1 text-xs text-muted-foreground">
-          Soft alert at {summary.warnPercent}%{summary.paused && summary.pauseReason ? ` · ${summary.pauseReason} pause` : ""}
+          Soft alert at {summary.warnPercent}%{summary.paused && summary.pauseReason ? `  ·  ${summary.pauseReason} pause` : ""}
         </div>
       </div>
     </div>
@@ -217,3 +217,4 @@ export function BudgetPolicyCard({
     </Card>
   );
 }
+

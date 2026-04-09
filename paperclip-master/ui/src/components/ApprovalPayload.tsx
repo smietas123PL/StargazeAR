@@ -1,4 +1,4 @@
-import { UserPlus, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
+﻿import { UserPlus, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
 import { formatCents } from "../lib/utils";
 
 export const typeLabel: Record<string, string> = {
@@ -64,7 +64,7 @@ export function HireAgentPayload({ payload }: { payload: Record<string, unknown>
     <div className="mt-3 space-y-1.5 text-sm">
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Name</span>
-        <span className="font-medium">{String(payload.name ?? "—")}</span>
+        <span className="font-medium">{String(payload.name ?? " - ")}</span>
       </div>
       <PayloadField label="Role" value={payload.role} />
       <PayloadField label="Title" value={payload.title} />
@@ -117,7 +117,7 @@ export function BudgetOverridePayload({ payload }: { payload: Record<string, unk
       <PayloadField label="Metric" value={payload.metric} />
       {(budgetAmount !== null || observedAmount !== null) ? (
         <div className="rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-          Limit {budgetAmount !== null ? formatCents(budgetAmount) : "—"} · Observed {observedAmount !== null ? formatCents(observedAmount) : "—"}
+          Limit {budgetAmount !== null ? formatCents(budgetAmount) : " - "}  ·  Observed {observedAmount !== null ? formatCents(observedAmount) : " - "}
         </div>
       ) : null}
       {!!payload.guidance && (
@@ -132,3 +132,4 @@ export function ApprovalPayloadRenderer({ type, payload }: { type: string; paylo
   if (type === "budget_override_required") return <BudgetOverridePayload payload={payload} />;
   return <CeoStrategyPayload payload={payload} />;
 }
+

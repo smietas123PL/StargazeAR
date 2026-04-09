@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Moon, Settings, Sun } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate, useParams } from "@/lib/router";
@@ -179,13 +179,13 @@ export function Layout() {
 
       if (dy > MAX_VERTICAL) return; // vertical scroll, ignore
 
-      // Swipe right from left edge → open
+      // Swipe right from left edge -> open
       if (!sidebarOpen && startX < EDGE_ZONE && dx > MIN_DISTANCE) {
         setSidebarOpen(true);
         return;
       }
 
-      // Swipe left when open → close
+      // Swipe left when open -> close
       if (sidebarOpen && dx < -MIN_DISTANCE) {
         setSidebarOpen(false);
       }
@@ -342,7 +342,7 @@ export function Layout() {
         ) : (
           <div className="flex h-full flex-col shrink-0">
             <div className="flex flex-1 min-h-0">
-              <CompanyRail />
+              {companies.length > 1 && <CompanyRail />}
               <div
                 className={cn(
                   "overflow-hidden transition-[width] duration-100 ease-out",
@@ -439,3 +439,4 @@ export function Layout() {
     </div>
   );
 }
+

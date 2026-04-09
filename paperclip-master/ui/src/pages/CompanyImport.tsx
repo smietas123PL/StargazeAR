@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+﻿import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CompanyPortabilityCollisionStrategy,
@@ -47,9 +47,9 @@ import {
 import { readZipArchive } from "../lib/zip";
 import { getPortableFileDataUrl, getPortableFileText, isPortableImageFile } from "../lib/portable-files";
 
-// ── Import-specific helpers ───────────────────────────────────────────
+// â”€â”€ Import-specific helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/** Build a map from file path → planned action (create/update/skip) using the manifest + plan */
+/** Build a map from file path -> planned action (create/update/skip) using the manifest + plan */
 function buildActionMap(preview: CompanyPortabilityPreviewResult): Map<string, string> {
   const map = new Map<string, string>();
   const manifest = preview.manifest;
@@ -143,7 +143,7 @@ function FrontmatterCard({ data }: { data: FrontmatterData }) {
   );
 }
 
-// ── Import file tree customization ───────────────────────────────────
+// â”€â”€ Import file tree customization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function renderImportFileExtra(node: FileTreeNode, checked: boolean, renameMap: Map<string, string>) {
   // Show rename indicator only on directories (folders), not individual files
@@ -175,7 +175,7 @@ function importFileRowClassName(_node: FileTreeNode, checked: boolean) {
   return !checked ? "opacity-50" : undefined;
 }
 
-// ── Preview pane ──────────────────────────────────────────────────────
+// â”€â”€ Preview pane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ImportPreviewPane({
   selectedFile,
@@ -262,7 +262,7 @@ function ImportPreviewPane({
   );
 }
 
-// ── Conflict item type ───────────────────────────────────────────────
+// â”€â”€ Conflict item type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ConflictItem {
   slug: string;
@@ -339,7 +339,7 @@ function deriveSourcePrefix(
   return null;
 }
 
-/** Generate a prefix-based rename: e.g. "gstack" + "CEO" → "gstack-CEO" */
+/** Generate a prefix-based rename: e.g. "gstack" + "CEO" -> "gstack-CEO" */
 function prefixedName(prefix: string | null, originalName: string): string {
   if (!prefix) return originalName;
   return `${prefix}-${originalName}`;
@@ -384,7 +384,7 @@ function applyImportedSidebarOrder(
   }
 }
 
-// ── Conflict resolution UI ───────────────────────────────────────────
+// â”€â”€ Conflict resolution UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ConflictResolutionList({
   conflicts,
@@ -510,7 +510,7 @@ function ConflictResolutionList({
   );
 }
 
-// ── Adapter type options for import ───────────────────────────────────
+// â”€â”€ Adapter type options for import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const GEMINI_IMPORT_ADAPTER: CreateConfigValues["adapterType"] = "gemini_local";
 const IMPORT_ADAPTER_OPTIONS: { value: string; label: string }[] = [
@@ -520,7 +520,7 @@ const IMPORT_ADAPTER_OPTIONS: { value: string; label: string }[] = [
   },
 ];
 
-// ── Adapter picker for imported agents ───────────────────────────────
+// â”€â”€ Adapter picker for imported agents â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface AdapterPickerItem {
   slug: string;
@@ -624,7 +624,7 @@ function AdapterPickerList({
   );
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function readLocalPackageZip(file: File): Promise<{
   name: string;
@@ -645,7 +645,7 @@ async function readLocalPackageZip(file: File): Promise<{
   };
 }
 
-// ── Main page ─────────────────────────────────────────────────────────
+// â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function CompanyImport() {
   const {
@@ -753,7 +753,7 @@ export function CompanyImport() {
       setSkippedSlugs(new Set());
       setConfirmedSlugs(new Set());
 
-      // Initialize adapter overrides — default all imported agents to Gemini
+      // Initialize adapter overrides  -  default all imported agents to Gemini
       const defaultAdapters: Record<string, string> = {};
       for (const agent of result.manifest.agents) {
         defaultAdapters[agent.slug] = GEMINI_IMPORT_ADAPTER;
@@ -901,7 +901,7 @@ export function CompanyImport() {
     [importPreview],
   );
 
-  // Map directory paths → planned rename name for display in the file tree
+  // Map directory paths -> planned rename name for display in the file tree
   // Also maps file paths for use in the preview header
   const renameMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -912,10 +912,10 @@ export function CompanyImport() {
       if (isSkipped) continue;
       const renamedTo = nameOverrides[c.slug] ?? c.plannedName;
       if (renamedTo === c.originalName) continue;
-      // Map the parent directory (e.g. agents/ceo → gstack-ceo) for the file tree
+      // Map the parent directory (e.g. agents/ceo -> gstack-ceo) for the file tree
       const parentDir = c.filePath.split("/").slice(0, -1).join("/");
       if (parentDir) map.set(parentDir, renamedTo);
-      // Map the file path too — used by the preview header, not shown in tree
+      // Map the file path too  -  used by the preview header, not shown in tree
       map.set(c.filePath, renamedTo);
     }
     return map;
@@ -1284,7 +1284,7 @@ export function CompanyImport() {
             onChangeConfig={handleAdapterConfigChange}
           />
 
-          {/* Import button — below renames */}
+          {/* Import button  -  below renames */}
           <div className="mx-5 mt-3 flex justify-end">
             <Button
               size="sm"
@@ -1351,3 +1351,4 @@ export function CompanyImport() {
     </div>
   );
 }
+

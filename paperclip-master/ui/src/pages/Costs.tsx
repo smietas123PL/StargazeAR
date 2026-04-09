@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
+﻿import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   BudgetPolicySummary,
@@ -151,7 +151,7 @@ export function Costs() {
   const { setBreadcrumbs } = useBreadcrumbs();
   const queryClient = useQueryClient();
 
-  const [mainTab, setMainTab] = useState<"overview" | "budgets" | "providers" | "billers" | "finance">("overview");
+  const [mainTab, setMainTab] = useState<"overview" | "budgets" | "usage" | "finance">("overview");
   const [activeProvider, setActiveProvider] = useState("all");
   const [activeBiller, setActiveBiller] = useState("all");
 
@@ -292,7 +292,7 @@ export function Costs() {
   const { data: providerData } = useQuery({
     queryKey: queryKeys.usageByProvider(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byProvider(companyId, from || undefined, to || undefined),
-    enabled: !!selectedCompanyId && customReady && (mainTab === "providers" || mainTab === "billers"),
+    enabled: !!selectedCompanyId && customReady && mainTab === "usage",
     refetchInterval: 30_000,
     staleTime: 10_000,
   });
@@ -300,7 +300,7 @@ export function Costs() {
   const { data: billerData } = useQuery({
     queryKey: queryKeys.usageByBiller(companyId, from || undefined, to || undefined),
     queryFn: () => costsApi.byBiller(companyId, from || undefined, to || undefined),
-    enabled: !!selectedCompanyId && customReady && mainTab === "billers",
+    enabled: !!selectedCompanyId && customReady && mainTab === "usage",
     refetchInterval: 30_000,
     staleTime: 10_000,
   });
@@ -308,7 +308,7 @@ export function Costs() {
   const { data: weekData } = useQuery({
     queryKey: queryKeys.usageByProvider(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byProvider(companyId, weekRange.from, weekRange.to),
-    enabled: !!selectedCompanyId && (mainTab === "providers" || mainTab === "billers"),
+    enabled: !!selectedCompanyId && mainTab === "usage",
     refetchInterval: 30_000,
     staleTime: 10_000,
   });
@@ -316,7 +316,7 @@ export function Costs() {
   const { data: weekBillerData } = useQuery({
     queryKey: queryKeys.usageByBiller(companyId, weekRange.from, weekRange.to),
     queryFn: () => costsApi.byBiller(companyId, weekRange.from, weekRange.to),
-    enabled: !!selectedCompanyId && mainTab === "billers",
+    enabled: !!selectedCompanyId && mainTab === "usage",
     refetchInterval: 30_000,
     staleTime: 10_000,
   });
@@ -324,7 +324,7 @@ export function Costs() {
   const { data: windowData } = useQuery({
     queryKey: queryKeys.usageWindowSpend(companyId),
     queryFn: () => costsApi.windowSpend(companyId),
-    enabled: !!selectedCompanyId && mainTab === "providers",
+    enabled: !!selectedCompanyId && mainTab === "usage",
     refetchInterval: 30_000,
     staleTime: 10_000,
   });
@@ -332,7 +332,7 @@ export function Costs() {
   const { data: quotaData, isLoading: quotaLoading } = useQuery({
     queryKey: queryKeys.usageQuotaWindows(companyId),
     queryFn: () => costsApi.quotaWindows(companyId),
-    enabled: !!selectedCompanyId && mainTab === "providers",
+    enabled: !!selectedCompanyId && mainTab === "usage",
     refetchInterval: 300_000,
     staleTime: 60_000,
   });
@@ -579,50 +579,14 @@ export function Costs() {
             </div>
           ) : null}
 
-          <div className="grid gap-3 lg:grid-cols-4">
-            <MetricTile
-              label="Inference spend"
-              value={formatCents(spendData?.summary.spendCents ?? 0)}
-              subtitle={`${formatTokens(inferenceTokenTotal)} tokens across request-scoped events`}
-              icon={DollarSign}
-            />
-            <MetricTile
-              label="Budget"
-              value={activeBudgetIncidents.length > 0 ? String(activeBudgetIncidents.length) : (
-                spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
-                  ? `${spendData.summary.utilizationPercent}%`
-                  : "Open"
-              )}
-              subtitle={
-                activeBudgetIncidents.length > 0
-                  ? `${budgetData?.pausedAgentCount ?? 0} agents paused · ${budgetData?.pausedProjectCount ?? 0} projects paused`
-                  : spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
-                    ? `${formatCents(spendData.summary.spendCents)} of ${formatCents(spendData.summary.budgetCents)}`
-                    : "No monthly cap configured"
-              }
-              icon={Coins}
-            />
-            <MetricTile
-              label="Finance net"
-              value={formatCents(financeData?.summary.netCents ?? 0)}
-              subtitle={`${formatCents(financeData?.summary.debitCents ?? 0)} debits · ${formatCents(financeData?.summary.creditCents ?? 0)} credits`}
-              icon={ReceiptText}
-            />
-            <MetricTile
-              label="Finance events"
-              value={String(financeData?.summary.eventCount ?? 0)}
-              subtitle={`${formatCents(financeData?.summary.estimatedDebitCents ?? 0)} estimated in range`}
-              icon={ArrowUpRight}
-            />
-          </div>
+
       </div>
 
       <Tabs value={mainTab} onValueChange={(value) => setMainTab(value as typeof mainTab)}>
         <TabsList variant="line" className="justify-start">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="budgets">Budgets</TabsTrigger>
-          <TabsTrigger value="providers">Providers</TabsTrigger>
-          <TabsTrigger value="billers">Billers</TabsTrigger>
+          <TabsTrigger value="usage">Usage</TabsTrigger>
           <TabsTrigger value="finance">Finance</TabsTrigger>
         </TabsList>
 
@@ -635,6 +599,43 @@ export function Costs() {
             <p className="text-sm text-destructive">{(overviewError as Error).message}</p>
           ) : (
             <>
+              <div className="grid gap-3 lg:grid-cols-4 mb-8">
+                <MetricTile
+                  label="Inference spend"
+                  value={formatCents(spendData?.summary.spendCents ?? 0)}
+                  subtitle={`${formatTokens(inferenceTokenTotal)} tokens across request-scoped events`}
+                  icon={DollarSign}
+                />
+                <MetricTile
+                  label="Budget"
+                  value={activeBudgetIncidents.length > 0 ? String(activeBudgetIncidents.length) : (
+                    spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
+                      ? `${spendData.summary.utilizationPercent}%`
+                      : "Unlimited"
+                  )}
+                  subtitle={
+                    activeBudgetIncidents.length > 0
+                      ? `${budgetData?.pausedAgentCount ?? 0} agents paused  ·  ${budgetData?.pausedProjectCount ?? 0} projects paused`
+                      : spendData?.summary.budgetCents && spendData.summary.budgetCents > 0
+                        ? `${formatCents(spendData.summary.spendCents)} of ${formatCents(spendData.summary.budgetCents)}`
+                        : "No monthly cap configured"
+                  }
+                  icon={Coins}
+                />
+                <MetricTile
+                  label="Finance net"
+                  value={formatCents(financeData?.summary.netCents ?? 0)}
+                  subtitle={`${formatCents(financeData?.summary.debitCents ?? 0)} debits  ·  ${formatCents(financeData?.summary.creditCents ?? 0)} credits`}
+                  icon={ReceiptText}
+                />
+                <MetricTile
+                  label="Finance events"
+                  value={String(financeData?.summary.eventCount ?? 0)}
+                  subtitle={`${formatCents(financeData?.summary.estimatedDebitCents ?? 0)} estimated in range`}
+                  icon={ArrowUpRight}
+                />
+              </div>
+
               {activeBudgetIncidents.length > 0 ? (
                 <div className="grid gap-4 xl:grid-cols-2">
                   {activeBudgetIncidents.slice(0, 2).map((incident) => (
@@ -747,12 +748,12 @@ export function Costs() {
                               <div className="text-right text-sm tabular-nums">
                                 <div className="font-medium">{formatCents(row.costCents)}</div>
                                 <div className="text-xs text-muted-foreground">
-                                  in {formatTokens(row.inputTokens + row.cachedInputTokens)} · out {formatTokens(row.outputTokens)}
+                                  in {formatTokens(row.inputTokens + row.cachedInputTokens)}  ·  out {formatTokens(row.outputTokens)}
                                 </div>
                                 {(row.apiRunCount > 0 || row.subscriptionRunCount > 0) ? (
                                   <div className="text-xs text-muted-foreground">
                                     {row.apiRunCount > 0 ? `${row.apiRunCount} api` : "0 api"}
-                                    {" · "}
+                                    {"  ·  "}
                                     {row.subscriptionRunCount > 0
                                       ? `${row.subscriptionRunCount} subscription`
                                       : "0 subscription"}
@@ -777,7 +778,7 @@ export function Costs() {
                                           <span className="font-mono">{modelRow.model}</span>
                                         </div>
                                         <div className="truncate text-muted-foreground">
-                                          {providerDisplayName(modelRow.biller)} · {billingTypeDisplayName(modelRow.billingType)}
+                                          {providerDisplayName(modelRow.biller)}  ·  {billingTypeDisplayName(modelRow.billingType)}
                                         </div>
                                       </div>
                                       <div className="text-right tabular-nums">
@@ -948,110 +949,111 @@ export function Costs() {
           )}
         </TabsContent>
 
-        <TabsContent value="providers" className="mt-4 space-y-4">
+        <TabsContent value="usage" className="mt-4 space-y-8">
           {showCustomPrompt ? (
             <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
           ) : (
             <>
-              <Tabs value={effectiveProvider} onValueChange={setActiveProvider}>
-                <PageTabBar items={providerTabItems} value={effectiveProvider} />
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">By Provider</h2>
+                <Tabs value={effectiveProvider} onValueChange={setActiveProvider}>
+                  <PageTabBar items={providerTabItems} value={effectiveProvider} />
 
-                <TabsContent value="all" className="mt-4">
-                  {providers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No cost events in this period.</p>
-                  ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {providers.map((provider) => (
-                        <ProviderQuotaCard
-                          key={provider}
-                          provider={provider}
-                          rows={byProvider.get(provider) ?? []}
-                          budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
-                          totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
-                          weekSpendCents={weekSpendByProvider.get(provider) ?? 0}
-                          windowRows={windowSpendByProvider.get(provider) ?? []}
-                          showDeficitNotch={deficitNotchByProvider.get(provider) ?? false}
-                          quotaWindows={quotaWindowsByProvider.get(provider) ?? []}
-                          quotaError={quotaErrorsByProvider.get(provider) ?? null}
-                          quotaSource={quotaSourcesByProvider.get(provider) ?? null}
-                          quotaLoading={quotaLoading}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
-
-                {providers.map((provider) => (
-                  <TabsContent key={provider} value={provider} className="mt-4">
-                    <ProviderQuotaCard
-                      provider={provider}
-                      rows={byProvider.get(provider) ?? []}
-                      budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
-                      totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
-                      weekSpendCents={weekSpendByProvider.get(provider) ?? 0}
-                      windowRows={windowSpendByProvider.get(provider) ?? []}
-                      showDeficitNotch={deficitNotchByProvider.get(provider) ?? false}
-                      quotaWindows={quotaWindowsByProvider.get(provider) ?? []}
-                      quotaError={quotaErrorsByProvider.get(provider) ?? null}
-                      quotaSource={quotaSourcesByProvider.get(provider) ?? null}
-                      quotaLoading={quotaLoading}
-                    />
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </>
-          )}
-        </TabsContent>
-
-        <TabsContent value="billers" className="mt-4 space-y-4">
-          {showCustomPrompt ? (
-            <p className="text-sm text-muted-foreground">Select a start and end date to load data.</p>
-          ) : (
-            <>
-              <Tabs value={effectiveBiller} onValueChange={setActiveBiller}>
-                <PageTabBar items={billerTabItems} value={effectiveBiller} />
-
-                <TabsContent value="all" className="mt-4">
-                  {billers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No billable events in this period.</p>
-                  ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {billers.map((biller) => {
-                        const row = (byBiller.get(biller) ?? [])[0];
-                        if (!row) return null;
-                        const providerRows = (providerData ?? []).filter((entry) => entry.biller === biller);
-                        return (
-                          <BillerSpendCard
-                            key={biller}
-                            row={row}
-                            weekSpendCents={weekSpendByBiller.get(biller) ?? 0}
+                  <TabsContent value="all" className="mt-4">
+                    {providers.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No cost events in this period.</p>
+                    ) : (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {providers.map((provider) => (
+                          <ProviderQuotaCard
+                            key={provider}
+                            provider={provider}
+                            rows={byProvider.get(provider) ?? []}
                             budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
                             totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
-                            providerRows={providerRows}
+                            weekSpendCents={weekSpendByProvider.get(provider) ?? 0}
+                            windowRows={windowSpendByProvider.get(provider) ?? []}
+                            showDeficitNotch={deficitNotchByProvider.get(provider) ?? false}
+                            quotaWindows={quotaWindowsByProvider.get(provider) ?? []}
+                            quotaError={quotaErrorsByProvider.get(provider) ?? null}
+                            quotaSource={quotaSourcesByProvider.get(provider) ?? null}
+                            quotaLoading={quotaLoading}
                           />
-                        );
-                      })}
-                    </div>
-                  )}
-                </TabsContent>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
 
-                {billers.map((biller) => {
-                  const row = (byBiller.get(biller) ?? [])[0];
-                  if (!row) return null;
-                  const providerRows = (providerData ?? []).filter((entry) => entry.biller === biller);
-                  return (
-                    <TabsContent key={biller} value={biller} className="mt-4">
-                      <BillerSpendCard
-                        row={row}
-                        weekSpendCents={weekSpendByBiller.get(biller) ?? 0}
+                  {providers.map((provider) => (
+                    <TabsContent key={provider} value={provider} className="mt-4">
+                      <ProviderQuotaCard
+                        provider={provider}
+                        rows={byProvider.get(provider) ?? []}
                         budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
                         totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
-                        providerRows={providerRows}
+                        weekSpendCents={weekSpendByProvider.get(provider) ?? 0}
+                        windowRows={windowSpendByProvider.get(provider) ?? []}
+                        showDeficitNotch={deficitNotchByProvider.get(provider) ?? false}
+                        quotaWindows={quotaWindowsByProvider.get(provider) ?? []}
+                        quotaError={quotaErrorsByProvider.get(provider) ?? null}
+                        quotaSource={quotaSourcesByProvider.get(provider) ?? null}
+                        quotaLoading={quotaLoading}
                       />
                     </TabsContent>
-                  );
-                })}
-              </Tabs>
+                  ))}
+                </Tabs>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">By Biller</h2>
+                  <p className="text-sm text-muted-foreground">Billers provide financial invoicing for API services</p>
+                </div>
+                <Tabs value={effectiveBiller} onValueChange={setActiveBiller}>
+                  <PageTabBar items={billerTabItems} value={effectiveBiller} />
+
+                  <TabsContent value="all" className="mt-4">
+                    {billers.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No billable events in this period.</p>
+                    ) : (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {billers.map((biller) => {
+                          const row = (byBiller.get(biller) ?? [])[0];
+                          if (!row) return null;
+                          const providerRows = (providerData ?? []).filter((entry) => entry.biller === biller);
+                          return (
+                            <BillerSpendCard
+                              key={biller}
+                              row={row}
+                              weekSpendCents={weekSpendByBiller.get(biller) ?? 0}
+                              budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
+                              totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
+                              providerRows={providerRows}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {billers.map((biller) => {
+                    const row = (byBiller.get(biller) ?? [])[0];
+                    if (!row) return null;
+                    const providerRows = (providerData ?? []).filter((entry) => entry.biller === biller);
+                    return (
+                      <TabsContent key={biller} value={biller} className="mt-4">
+                        <BillerSpendCard
+                          row={row}
+                          weekSpendCents={weekSpendByBiller.get(biller) ?? 0}
+                          budgetMonthlyCents={spendData?.summary.budgetCents ?? 0}
+                          totalCompanySpendCents={spendData?.summary.spendCents ?? 0}
+                          providerRows={providerRows}
+                        />
+                      </TabsContent>
+                    );
+                  })}
+                </Tabs>
+              </div>
             </>
           )}
         </TabsContent>
@@ -1100,3 +1102,5 @@ export function Costs() {
     </div>
   );
 }
+
+

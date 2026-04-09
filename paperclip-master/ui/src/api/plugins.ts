@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @fileoverview Frontend API client for the Paperclip plugin system.
  *
  * All functions in `pluginsApi` map 1:1 to REST endpoints on
@@ -115,7 +115,7 @@ export interface PluginDashboardWebhookDelivery {
  * Aggregated health dashboard data returned by `GET /api/plugins/:pluginId/dashboard`.
  *
  * Contains worker diagnostics, recent job runs, recent webhook deliveries,
- * and the current health check result — all in a single response.
+ * and the current health check result  -  all in a single response.
  */
 export interface PluginDashboardData {
   pluginId: string;
@@ -338,7 +338,7 @@ export const pluginsApi = {
     api.post<{ valid: boolean; message?: string }>(`/plugins/${pluginId}/config/test`, { configJson }),
 
   // ===========================================================================
-  // Bridge proxy endpoints — used by the plugin UI bridge runtime
+  // Bridge proxy endpoints  -  used by the plugin UI bridge runtime
   // ===========================================================================
 
   /**
@@ -365,8 +365,8 @@ export const pluginsApi = {
    * - `409` when the plugin is not in a callable runtime state
    * - `5xx` with a `PluginBridgeError`-shaped body when the worker throws
    *
-   * @see PLUGIN_SPEC.md §13.8 — `getData`
-   * @see PLUGIN_SPEC.md §19.7 — Error Propagation Through The Bridge
+   * @see PLUGIN_SPEC.md Â§13.8  -  `getData`
+   * @see PLUGIN_SPEC.md Â§19.7  -  Error Propagation Through The Bridge
    */
   bridgeGetData: (
     pluginId: string,
@@ -405,8 +405,8 @@ export const pluginsApi = {
    * - `409` when the plugin is not in a callable runtime state
    * - `5xx` with a `PluginBridgeError`-shaped body when the worker throws
    *
-   * @see PLUGIN_SPEC.md §13.9 — `performAction`
-   * @see PLUGIN_SPEC.md §19.7 — Error Propagation Through The Bridge
+   * @see PLUGIN_SPEC.md Â§13.9  -  `performAction`
+   * @see PLUGIN_SPEC.md Â§19.7  -  Error Propagation Through The Bridge
    */
   bridgePerformAction: (
     pluginId: string,
@@ -421,3 +421,4 @@ export const pluginsApi = {
       renderEnvironment: renderEnvironment ?? undefined,
     }),
 };
+

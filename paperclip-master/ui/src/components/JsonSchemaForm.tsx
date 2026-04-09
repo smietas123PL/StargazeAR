@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+﻿import React, { useCallback, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -185,7 +185,7 @@ export function validateField(
             return `Must match pattern: ${schema.pattern}`;
           }
         } catch {
-          // Invalid regex in schema — skip
+          // Invalid regex in schema  -  skip
         }
       }
     }
@@ -1046,3 +1046,4 @@ export function JsonSchemaForm({
     </div>
   );
 }
+

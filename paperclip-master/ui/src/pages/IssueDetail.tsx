@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+﻿import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { pickTextColorForPillBg } from "@/lib/color-contrast";
 import { Link, useLocation, useNavigate, useParams } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -778,7 +778,7 @@ export function IssueDetail() {
     const titleLabel = issue?.title ?? issueId ?? "Issue";
     setBreadcrumbs([
       sourceBreadcrumb,
-      { label: hasLiveRuns ? `🔵 ${titleLabel}` : titleLabel },
+      { label: hasLiveRuns ? `ðŸ”µ ${titleLabel}` : titleLabel },
     ]);
   }, [setBreadcrumbs, sourceBreadcrumb, issue, issueId, hasLiveRuns]);
 
@@ -1183,7 +1183,7 @@ export function IssueDetail() {
                 </button>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                {attachment.contentType} · {(attachment.byteSize / 1024).toFixed(1)} KB
+                {attachment.contentType}  ·  {(attachment.byteSize / 1024).toFixed(1)} KB
               </p>
               {isImageAttachment(attachment) && (
                 <a href={attachment.contentPath} target="_blank" rel="noreferrer">
@@ -1410,3 +1410,4 @@ export function IssueDetail() {
     </div>
   );
 }
+

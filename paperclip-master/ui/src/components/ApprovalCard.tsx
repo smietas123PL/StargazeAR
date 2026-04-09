@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Clock } from "lucide-react";
+﻿import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { Link } from "@/lib/router";
 import { Button } from "@/components/ui/button";
 import { Identity } from "./Identity";
@@ -55,7 +55,7 @@ export function ApprovalCard({
         <div className="flex items-center gap-1.5 shrink-0">
           {statusIcon(approval.status)}
           <span className="text-xs text-muted-foreground capitalize">{approval.status}</span>
-          <span className="text-xs text-muted-foreground">· {timeAgo(approval.createdAt)}</span>
+          <span className="text-xs text-muted-foreground"> ·  {timeAgo(approval.createdAt)}</span>
         </div>
       </div>
 
@@ -104,3 +104,4 @@ export function ApprovalCard({
     </div>
   );
 }
+

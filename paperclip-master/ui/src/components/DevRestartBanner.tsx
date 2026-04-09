@@ -1,4 +1,4 @@
-import { AlertTriangle, RotateCcw, TimerReset } from "lucide-react";
+﻿import { AlertTriangle, RotateCcw, TimerReset } from "lucide-react";
 import type { DevServerHealthStatus } from "../api/health";
 
 function formatRelativeTimestamp(value: string | null): string | null {
@@ -47,7 +47,7 @@ export function DevRestartBanner({ devServer }: { devServer?: DevServerHealthSta
           </div>
           <p className="mt-1 text-sm">
             {describeReason(devServer)}
-            {changedAt ? ` · updated ${changedAt}` : ""}
+            {changedAt ? `  ·  updated ${changedAt}` : ""}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-amber-900/80 dark:text-amber-100/75">
             {sample.length > 0 ? (
@@ -87,3 +87,4 @@ export function DevRestartBanner({ devServer }: { devServer?: DevServerHealthSta
     </div>
   );
 }
+

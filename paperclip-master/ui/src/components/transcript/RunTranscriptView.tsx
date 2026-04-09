@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import type { TranscriptEntry } from "../../adapters";
 import { MarkdownBody } from "../MarkdownBody";
 import { cn, formatTokens } from "../../lib/utils";
@@ -116,7 +116,7 @@ function compactWhitespace(value: string): string {
 }
 
 function truncate(value: string, max: number): string {
-  return value.length > max ? `${value.slice(0, Math.max(0, max - 1))}…` : value;
+  return value.length > max ? `${value.slice(0, Math.max(0, max - 1))}...` : value;
 }
 
 function humanizeLabel(value: string): string {
@@ -479,7 +479,7 @@ export function normalizeTranscript(entries: TranscriptEntry[], streaming: boole
         ts: entry.ts,
         label: "init",
         tone: "info",
-        text: `model ${entry.model}${entry.sessionId ? ` • session ${entry.sessionId}` : ""}`,
+        text: `model ${entry.model}${entry.sessionId ? ` â€¢ session ${entry.sessionId}` : ""}`,
       });
       continue;
     }
@@ -1253,3 +1253,4 @@ export function RunTranscriptView({
     </div>
   );
 }
+

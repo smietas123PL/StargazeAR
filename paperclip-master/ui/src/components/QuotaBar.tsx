@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils";
 
 interface QuotaBarProps {
   label: string;
@@ -42,7 +42,7 @@ export function QuotaBar({
         </div>
       </div>
 
-      {/* track — boxed border, square corners to match the theme */}
+      {/* track  -  boxed border, square corners to match the theme */}
       <div className="relative h-2 w-full border border-border overflow-hidden">
         {/* fill */}
         <div
@@ -52,7 +52,7 @@ export function QuotaBar({
           )}
           style={{ width: `${clampedPct}%` }}
         />
-        {/* deficit notch — 2px wide, sits at the fill tip */}
+        {/* deficit notch  -  2px wide, sits at the fill tip */}
         {showDeficitNotch && clampedPct > 0 && (
           <div
             className="absolute inset-y-0 w-[2px] bg-destructive z-10"
@@ -63,3 +63,4 @@ export function QuotaBar({
     </div>
   );
 }
+

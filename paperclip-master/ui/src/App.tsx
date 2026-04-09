@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Navigate, Outlet, Route, Routes, useLocation, useParams } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -169,12 +170,14 @@ function boardRoutes() {
       <Route path="activity" element={<Activity />} />
       <Route path="inbox" element={<InboxRootRedirect />} />
       <Route path="inbox/mine" element={<Inbox />} />
-      <Route path="inbox/recent" element={<Inbox />} />
-      <Route path="inbox/unread" element={<Inbox />} />
       <Route path="inbox/all" element={<Inbox />} />
       <Route path="inbox/new" element={<Navigate to="/inbox/mine" replace />} />
-      <Route path="design-guide" element={<DesignGuide />} />
-      <Route path="tests/ux/runs" element={<RunTranscriptUxLab />} />
+      {import.meta.env.DEV && (
+        <>
+          <Route path="design-guide" element={<DesignGuide />} />
+          <Route path="tests/ux/runs" element={<RunTranscriptUxLab />} />
+        </>
+      )}
       <Route path=":pluginRoutePath" element={<PluginPage />} />
       <Route path="*" element={<NotFoundPage scope="board" />} />
     </>

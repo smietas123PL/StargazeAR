@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -894,7 +894,7 @@ export function RoutineDetail() {
                   <SelectContent>
                     {triggerKinds.map((kind) => (
                       <SelectItem key={kind} value={kind} disabled={kind === "webhook"}>
-                        {kind}{kind === "webhook" ? " — COMING SOON" : ""}
+                        {kind}{kind === "webhook" ? "  -  COMING SOON" : ""}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1001,7 +1001,7 @@ export function RoutineDetail() {
                       <span className="text-muted-foreground truncate">
                         {Object.entries(event.details).slice(0, 3).map(([key, value], i) => (
                           <span key={key}>
-                            {i > 0 && <span className="mx-1 text-border">·</span>}
+                            {i > 0 && <span className="mx-1 text-border"> · </span>}
                             <span className="text-muted-foreground/70">{key.replaceAll("_", " ")}:</span>{" "}
                             {formatActivityDetailValue(value)}
                           </span>
@@ -1019,3 +1019,4 @@ export function RoutineDetail() {
     </div>
   );
 }
+

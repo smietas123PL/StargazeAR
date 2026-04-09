@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { pickTextColorForPillBg } from "@/lib/color-contrast";
 import { Link } from "@/lib/router";
 import type { Issue } from "@paperclipai/shared";
@@ -315,7 +315,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
           }
         >
           <Plus className="h-3 w-3" />
-          {createLabel.isPending ? "Creating…" : "Create label"}
+          {createLabel.isPending ? "Creating..." : "Create label"}
         </button>
       </div>
     </>
@@ -618,3 +618,4 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
     </div>
   );
 }
+

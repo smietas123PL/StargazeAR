@@ -1,13 +1,13 @@
-/**
- * @fileoverview Plugin UI slot system — dynamic loading, error isolation,
+﻿/**
+ * @fileoverview Plugin UI slot system  -  dynamic loading, error isolation,
  * and rendering of plugin-contributed UI extensions.
  *
  * Provides:
- * - `usePluginSlots(type, context?)` — React hook that discovers and
+ * - `usePluginSlots(type, context?)`  -  React hook that discovers and
  *   filters plugin UI contributions for a given slot type.
- * - `PluginSlotOutlet` — renders all matching slots inline with error
+ * - `PluginSlotOutlet`  -  renders all matching slots inline with error
  *   boundary isolation per plugin.
- * - `PluginBridgeScope` — wraps each plugin's component tree to inject
+ * - `PluginBridgeScope`  -  wraps each plugin's component tree to inject
  *   the bridge context (`pluginId`, host context) needed by bridge hooks.
  *
  * Plugin UI modules are loaded via dynamic ESM `import()` from the host's
@@ -15,8 +15,8 @@
  * exports named React components that correspond to `ui.slots[].exportName`
  * in the manifest.
  *
- * @see PLUGIN_SPEC.md §19 — UI Extension Model
- * @see PLUGIN_SPEC.md §19.0.3 — Bundle Serving
+ * @see PLUGIN_SPEC.md Â§19  -  UI Extension Model
+ * @see PLUGIN_SPEC.md Â§19.0.3  -  Bundle Serving
  */
 import {
   Component,
@@ -370,7 +370,7 @@ async function loadPluginModule(contribution: PluginUiContribution): Promise<voi
   const { pluginId, pluginKey, slots, launchers } = contribution;
   const moduleKey = buildPluginModuleKey(contribution);
 
-  // Already loaded or loading — return early.
+  // Already loaded or loading  -  return early.
   const state = pluginLoadStates.get(moduleKey);
   if (state === "loaded" || state === "loading") {
     // If currently loading, wait for the inflight promise.
@@ -435,7 +435,7 @@ async function loadPluginModule(contribution: PluginUiContribution): Promise<voi
           registerPluginWebComponent(pluginKey, exportName, exported);
         } else {
           console.warn(
-            `Plugin "${pluginKey}" export "${exportName}" is neither a function nor a string tag name — skipping.`,
+            `Plugin "${pluginKey}" export "${exportName}" is neither a function nor a string tag name  -  skipping.`,
           );
         }
       }
@@ -479,9 +479,9 @@ export async function ensurePluginContributionLoaded(
 
 /**
  * Returns the aggregate load state across a set of plugin contributions.
- * - If any plugin is still loading → "loading"
- * - If all are loaded (or no contributions) → "loaded"
- * - If all finished but some errored → "loaded" (errors are logged, not fatal)
+ * - If any plugin is still loading -> "loading"
+ * - If all are loaded (or no contributions) -> "loaded"
+ * - If all finished but some errored -> "loaded" (errors are logged, not fatal)
  */
 function aggregateLoadState(contributions: PluginUiContribution[]): "loading" | "loaded" {
   for (const c of contributions) {
@@ -829,7 +829,7 @@ export function PluginSlotOutlet({
 }
 
 // ---------------------------------------------------------------------------
-// Test helpers — exported for use in test suites only.
+// Test helpers  -  exported for use in test suites only.
 // ---------------------------------------------------------------------------
 
 /**
@@ -852,3 +852,4 @@ export function _resetPluginModuleLoader(): void {
 
 export const _applyJsxRuntimeKeyForTests = applyJsxRuntimeKey;
 export const _rewriteBareSpecifiersForTests = rewriteBareSpecifiers;
+

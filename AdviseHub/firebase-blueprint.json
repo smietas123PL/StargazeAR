@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "plan": { "type": "string", "enum": ["free", "premium"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["uid", "email", "plan", "createdAt"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "Advisory session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "question": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "running", "completed", "failed"] },
+        "createdAt": { "type": "number" },
+        "completedAt": { "type": "number" },
+        "fullContext": { "type": "string" },
+        "fileUrls": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "userId", "title", "question", "status", "createdAt"]
+    },
+    "SessionMessage": {
+      "title": "SessionMessage",
+      "description": "Messages within an advisory session",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "userId": { "type": "string", "description": "Added for security rules" },
+        "role": { "type": "string" },
+        "content": { "type": "string" },
+        "order": { "type": "number" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["sessionId", "userId", "role", "content", "order", "timestamp"]
+    },
+    "CouncilResult": {
+      "title": "CouncilResult",
+      "description": "Final results of the council",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "userId": { "type": "string", "description": "Added for security rules" },
+        "chairmanVerdict": { "type": "string" },
+        "peerReview": { "type": "string" },
+        "advisors": { "type": "object" }
+      },
+      "required": ["sessionId", "userId", "chairmanVerdict", "peerReview", "advisors"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/Session" },
+      "description": "Advisory sessions"
+    },
+    "/sessionMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/SessionMessage" },
+      "description": "Messages in sessions"
+    },
+    "/councilResults/{resultId}": {
+      "schema": { "$ref": "#/entities/CouncilResult" },
+      "description": "Results of sessions"
+    }
+  }
+}

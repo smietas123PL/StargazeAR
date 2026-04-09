@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isUuidLike, type ProjectWorkspace } from "@paperclipai/shared";
@@ -322,7 +322,7 @@ export function ProjectWorkspaceDetail() {
     },
   });
 
-  if (projectQuery.isLoading) return <p className="text-sm text-muted-foreground">Loading workspace…</p>;
+  if (projectQuery.isLoading) return <p className="text-sm text-muted-foreground">Loading workspace...</p>;
   if (projectQuery.error) {
     return (
       <p className="text-sm text-destructive">
@@ -391,7 +391,7 @@ export function ProjectWorkspaceDetail() {
               ) : (
                 <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300 sm:max-w-sm">
                   <Sparkles className="h-4 w-4" />
-                  This is the project’s primary codebase workspace.
+                  This is the projectâ€™s primary codebase workspace.
                 </div>
               )}
             </div>
@@ -652,7 +652,7 @@ export function ProjectWorkspaceDetail() {
                         </div>
                       </div>
                       <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground sm:text-right">
-                        {service.status} · {service.healthStatus}
+                        {service.status}  ·  {service.healthStatus}
                       </div>
                     </div>
                   </div>
@@ -671,3 +671,4 @@ export function ProjectWorkspaceDetail() {
     </div>
   );
 }
+

@@ -1,0 +1,44 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "expo": [
+        "src/types/shims/expo.d.ts"
+      ],
+      "expo-status-bar": [
+        "src/types/shims/expo-status-bar.d.ts"
+      ],
+      "expo-camera": [
+        "src/types/shims/expo-camera.d.ts"
+      ],
+      "expo-location": [
+        "src/types/shims/expo-location.d.ts"
+      ],
+      "expo-sensors": [
+        "src/types/shims/expo-sensors.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "App.tsx",
+    "index.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "app",
+    "components",
+    "hooks",
+    "constants",
+    "scripts",
+    "stargazear_old",
+    "node_modules"
+  ]
+}

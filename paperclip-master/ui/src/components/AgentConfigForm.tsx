@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AGENT_ADAPTER_TYPES } from "@paperclipai/shared";
 import type {
@@ -365,7 +365,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
     hideInstructionsFile,
   };
 
-  // Section toggle state — advanced always starts collapsed
+  // Section toggle state  -  advanced always starts collapsed
   const [runPolicyAdvancedOpen, setRunPolicyAdvancedOpen] = useState(false);
   // Popover states
   const [modelOpen, setModelOpen] = useState(false);
@@ -504,7 +504,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                 value={eff("identity", "reportsTo", props.agent.reportsTo ?? null)}
                 onChange={(id) => mark("identity", "reportsTo", id)}
                 excludeAgentIds={[props.agent.id]}
-                chooseLabel="Choose manager…"
+                chooseLabel="Choose manager..."
               />
             </Field>
             <Field label="Capabilities" hint={help.capabilities}>
@@ -642,7 +642,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
             </Field>
           )}
 
-          {/* Prompt template (create mode only — edit mode shows this in Identity) */}
+          {/* Prompt template (create mode only  -  edit mode shows this in Identity) */}
           {isLocal && isCreate && (
             <>
               <Field label="Prompt Template" hint={help.promptTemplate}>
@@ -979,7 +979,7 @@ function AdapterEnvironmentResult({ result }: { result: AdapterEnvironmentTestRe
             <span className="font-medium uppercase tracking-wide opacity-80">
               {check.level}
             </span>
-            <span className="mx-1 opacity-60">·</span>
+            <span className="mx-1 opacity-60"> · </span>
             <span>{check.message}</span>
             {check.detail && <span className="block opacity-75 break-all">({check.detail})</span>}
             {check.hint && <span className="block opacity-90 break-words">Hint: {check.hint}</span>}
@@ -1600,3 +1600,4 @@ function ThinkingEffortDropdown({
     </Field>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ExecutionWorkspace, Project, ProjectWorkspace } from "@paperclipai/shared";
@@ -343,7 +343,7 @@ export function ExecutionWorkspaceDetail() {
     },
   });
 
-  if (workspaceQuery.isLoading) return <p className="text-sm text-muted-foreground">Loading workspace…</p>;
+  if (workspaceQuery.isLoading) return <p className="text-sm text-muted-foreground">Loading workspace...</p>;
   if (workspaceQuery.error) {
     return (
       <p className="text-sm text-destructive">
@@ -604,7 +604,7 @@ export function ExecutionWorkspaceDetail() {
               <DetailRow label="Source issue">
                 {sourceIssue ? (
                   <Link to={issueUrl(sourceIssue)} className="hover:underline">
-                    {sourceIssue.identifier ?? sourceIssue.id} · {sourceIssue.title}
+                    {sourceIssue.identifier ?? sourceIssue.id}  ·  {sourceIssue.title}
                   </Link>
                 ) : workspace.sourceIssueId ? (
                   <MonoValue value={workspace.sourceIssueId} />
@@ -667,7 +667,7 @@ export function ExecutionWorkspaceDetail() {
               <DetailRow label="Last used">{formatDateTime(workspace.lastUsedAt)}</DetailRow>
               <DetailRow label="Cleanup">
                 {workspace.cleanupEligibleAt
-                  ? `${formatDateTime(workspace.cleanupEligibleAt)}${workspace.cleanupReason ? ` · ${workspace.cleanupReason}` : ""}`
+                  ? `${formatDateTime(workspace.cleanupEligibleAt)}${workspace.cleanupReason ? `  ·  ${workspace.cleanupReason}` : ""}`
                   : "Not scheduled"}
               </DetailRow>
             </div>
@@ -724,7 +724,7 @@ export function ExecutionWorkspaceDetail() {
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-1">
                           <div className="text-sm font-medium">{service.serviceName}</div>
-                          <div className="text-xs text-muted-foreground">{service.status} · {service.lifecycle}</div>
+                          <div className="text-xs text-muted-foreground">{service.status}  ·  {service.lifecycle}</div>
                           <div className="space-y-1 text-xs text-muted-foreground">
                             {service.url ? (
                               <a href={service.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
@@ -758,7 +758,7 @@ export function ExecutionWorkspaceDetail() {
               </div>
               <Separator className="my-4" />
               {workspaceOperationsQuery.isLoading ? (
-                <p className="text-sm text-muted-foreground">Loading workspace operations…</p>
+                <p className="text-sm text-muted-foreground">Loading workspace operations...</p>
               ) : workspaceOperationsQuery.error ? (
                 <p className="text-sm text-destructive">
                   {workspaceOperationsQuery.error instanceof Error
@@ -774,7 +774,7 @@ export function ExecutionWorkspaceDetail() {
                           <div className="text-sm font-medium">{operation.command ?? operation.phase}</div>
                           <div className="text-xs text-muted-foreground">
                             {formatDateTime(operation.startedAt)}
-                            {operation.finishedAt ? ` → ${formatDateTime(operation.finishedAt)}` : ""}
+                            {operation.finishedAt ? ` -> ${formatDateTime(operation.finishedAt)}` : ""}
                           </div>
                           {operation.stderrExcerpt ? (
                             <div className="whitespace-pre-wrap break-words text-xs text-destructive">{operation.stderrExcerpt}</div>
@@ -807,7 +807,7 @@ export function ExecutionWorkspaceDetail() {
           </div>
           <Separator className="my-4" />
           {linkedIssuesQuery.isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading linked issues…</p>
+            <p className="text-sm text-muted-foreground">Loading linked issues...</p>
           ) : linkedIssuesQuery.error ? (
             <p className="text-sm text-destructive">
               {linkedIssuesQuery.error instanceof Error
@@ -865,3 +865,4 @@ export function ExecutionWorkspaceDetail() {
     </>
   );
 }
+

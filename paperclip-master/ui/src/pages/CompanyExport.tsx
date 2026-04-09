@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   Agent,
@@ -47,9 +47,9 @@ import {
 /**
  * Extract the set of agent/project/task slugs that are "checked" based on
  * which file paths are in the checked set.
- *   agents/{slug}/AGENT.md   → agents slug
- *   projects/{slug}/PROJECT.md → projects slug
- *   tasks/{slug}/TASK.md     → tasks slug
+ *   agents/{slug}/AGENT.md   -> agents slug
+ *   projects/{slug}/PROJECT.md -> projects slug
+ *   tasks/{slug}/TASK.md     -> tasks slug
  */
 function checkedSlugs(checkedFiles: Set<string>): {
   agents: Set<string>;
@@ -191,7 +191,7 @@ function filterPaperclipYaml(yaml: string, checkedFiles: Set<string>): string {
       continue;
     }
 
-    // Outside filterable sections — pass through
+    // Outside filterable sections  -  pass through
     out.push(line);
   }
 
@@ -342,7 +342,7 @@ function downloadZip(
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// ── Frontmatter card (export-specific: skill click support) ──────────
+// â”€â”€ Frontmatter card (export-specific: skill click support) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function FrontmatterCard({
   data,
@@ -387,7 +387,7 @@ function FrontmatterCard({
   );
 }
 
-// ── Client-side README generation ────────────────────────────────────
+// â”€â”€ Client-side README generation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const ROLE_LABELS: Record<string, string> = {
   ceo: "CEO", cto: "CTO", cmo: "CMO", cfo: "CFO", coo: "COO",
@@ -485,7 +485,7 @@ function generateReadmeFromSelection(
   return lines.join("\n");
 }
 
-// ── Preview pane ──────────────────────────────────────────────────────
+// â”€â”€ Preview pane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ExportPreviewPane({
   selectedFile,
@@ -554,7 +554,7 @@ function ExportPreviewPane({
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────
+// â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /** Extract the file path from the current URL pathname (after /company/export/files/) */
 function filePathFromLocation(pathname: string): string | null {
@@ -692,7 +692,7 @@ export function CompanyExport() {
           prev,
         ),
       );
-      // Expand top-level dirs (except tasks — collapsed by default)
+      // Expand top-level dirs (except tasks  -  collapsed by default)
       const tree = buildFileTree(result.files);
       const topDirs = new Set<string>();
       for (const node of tree) {
@@ -805,7 +805,7 @@ export function CompanyExport() {
   const totalFiles = useMemo(() => countFiles(tree), [tree]);
   const selectedCount = checkedFiles.size;
 
-  // Filter out terminated agent messages — they don't need to be shown
+  // Filter out terminated agent messages  -  they don't need to be shown
   const warnings = useMemo(() => {
     if (!exportData) return [] as string[];
     return exportData.warnings.filter((w) => !/terminated agent/i.test(w));
@@ -1016,3 +1016,4 @@ export function CompanyExport() {
     </div>
   );
 }
+
