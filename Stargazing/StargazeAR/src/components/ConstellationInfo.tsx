@@ -13,7 +13,9 @@ import {
 
 import { useTheme } from '../context/ThemeContext';
 import { ZIndex } from '../constants/zIndex';
+import { isConstellationInSeason } from '../astronomy/seasons';
 import type { ProjectedConstellation, Star } from '../types';
+import type { GestureResponderEvent, PanResponderGestureState } from 'react-native';
 
 type ConstellationInfoProps = {
   selected: ProjectedConstellation | null;
@@ -88,7 +90,7 @@ export default function ConstellationInfo({
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_event: any, gestureState: any) =>
+        onMoveShouldSetPanResponder: (_event: GestureResponderEvent, gestureState: PanResponderGestureState) =>
           stateRef.current.isOpen &&
           gestureState.dy > SWIPE_CAPTURE_DELTA &&
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx),
@@ -96,12 +98,12 @@ export default function ConstellationInfo({
           translateY.stopAnimation();
           opacity.stopAnimation();
         },
-        onPanResponderMove: (_event: any, gestureState: any) => {
+        onPanResponderMove: (_event: GestureResponderEvent, gestureState: PanResponderGestureState) => {
           const nextTranslateY = Math.max(0, gestureState.dy);
           translateY.setValue(nextTranslateY);
           opacity.setValue(Math.max(0.78, 1 - nextTranslateY / 240));
         },
-        onPanResponderRelease: (_event: any, gestureState: any) => {
+        onPanResponderRelease: (_event: GestureResponderEvent, gestureState: PanResponderGestureState) => {
           if (gestureState.dy >= SWIPE_DOWN_THRESHOLD) {
             stateRef.current.onClose();
             return;
@@ -236,6 +238,9 @@ export default function ConstellationInfo({
     .filter(Boolean)
     .join(' / ');
   const description = displayedSelected?.data.description ?? '';
+  const seasons = displayedSelected?.data.season;
+  const seasonPl = seasons && seasons.length > 0 ? seasons.join(', ') : null;
+  const isInSeason = displayedSelected ? isConstellationInSeason(displayedSelected.data) : false;
   const bottomPadding = Math.max(insets.bottom, 0) + 12;
 
   return (
@@ -370,6 +375,23 @@ export default function ConstellationInfo({
                       style={[styles.statValue, { color: theme.sheetStatValue }]}
                     >
                       {brightestStar.name}
+                    </Text>
+                  </View>
+                ) : null}
+
+                {seasonPl ? (
+                  <View style={styles.statCard}>
+                    <Text style={[styles.statLabel, { color: theme.sheetStatLabel }]}>
+                      Najlepszy sezon
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        styles.statValue, 
+                        isInSeason ? { color: theme.accent } : { color: theme.sheetStatValue }
+                      ]}
+                    >
+                      {isInSeason ? `${seasonPl} (Teraz)` : seasonPl}
                     </Text>
                   </View>
                 ) : null}

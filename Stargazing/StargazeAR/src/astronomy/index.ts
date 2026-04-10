@@ -1,4 +1,4 @@
-import { CONSTELLATIONS } from './constellations';
+import { CONSTELLATIONS } from './catalog';
 import { atmosphericRefraction, raDecToAltAz } from './coordinates';
 import { localSiderealTime } from './sidereal';
 import { altAzToScreenXY } from '../utils/projection';
@@ -12,17 +12,73 @@ import type {
 
 const LST_CACHE_TTL_MS = 10000;
 
-let localSkyCache: {
-  expireAt: number;
-  latitudeDeg: number;
-  longitudeDeg: number;
-  lst: number;
-  constellations: Map<string, {
+export class SkyCache {
+  private expireAt: number = 0;
+  private latitudeDeg: number = 0;
+  private longitudeDeg: number = 0;
+  private constellations: Map<string, {
     centerAlt: number;
     centerAz: number;
     stars: Map<string, { alt: number; az: number }>;
-  }>;
-} | null = null;
+  }> | null = null;
+
+  public getCachedSky(location: UserLocation, timestamp: number, date: Date) {
+    if (
+      !this.constellations ||
+      timestamp > this.expireAt ||
+      this.latitudeDeg !== location.latitude ||
+      this.longitudeDeg !== location.longitude
+    ) {
+      const lst = localSiderealTime(date, location.longitude);
+      const skyMap = new Map();
+
+      for (const constellation of CONSTELLATIONS) {
+        const centerAltAz = raDecToAltAz({
+          raDeg: constellation.centerRa,
+          decDeg: constellation.centerDec,
+          lst,
+          latitudeDeg: location.latitude,
+        });
+
+        const correctedCenterAltitude =
+          centerAltAz.altitude + atmosphericRefraction(centerAltAz.altitude);
+
+        const starsMap = new Map();
+        for (const star of constellation.stars) {
+          const altAz = raDecToAltAz({
+            raDeg: star.ra,
+            decDeg: star.dec,
+            lst,
+            latitudeDeg: location.latitude,
+          });
+
+          const correctedAltitude =
+            altAz.altitude + atmosphericRefraction(altAz.altitude);
+
+          starsMap.set(star.id, { alt: correctedAltitude, az: altAz.azimuth });
+        }
+
+        skyMap.set(constellation.id, {
+          centerAlt: correctedCenterAltitude,
+          centerAz: centerAltAz.azimuth,
+          stars: starsMap,
+        });
+      }
+
+      this.expireAt = timestamp + LST_CACHE_TTL_MS;
+      this.latitudeDeg = location.latitude;
+      this.longitudeDeg = location.longitude;
+      this.constellations = skyMap;
+    }
+
+    return this.constellations;
+  }
+
+  public clear() {
+    this.constellations = null;
+    this.expireAt = 0;
+  }
+}
 
 export function computeVisibleConstellations(params: {
   location: UserLocation;
@@ -30,6 +86,7 @@ export function computeVisibleConstellations(params: {
   calibration: CalibrationData;
   screenWidth: number;
   screenHeight: number;
+  skyCache: SkyCache;
   date?: Date;
 }): ProjectedConstellation[] {
   const {
@@ -38,63 +95,12 @@ export function computeVisibleConstellations(params: {
     calibration,
     screenWidth,
     screenHeight,
+    skyCache,
     date = new Date(),
   } = params;
 
   const timestamp = date.getTime();
-
-  if (
-    !localSkyCache ||
-    timestamp > localSkyCache.expireAt ||
-    localSkyCache.latitudeDeg !== location.latitude ||
-    localSkyCache.longitudeDeg !== location.longitude
-  ) {
-    const lst = localSiderealTime(date, location.longitude);
-    const skyMap = new Map();
-
-    for (const constellation of CONSTELLATIONS) {
-      const centerAltAz = raDecToAltAz({
-        raDeg: constellation.centerRa,
-        decDeg: constellation.centerDec,
-        lst,
-        latitudeDeg: location.latitude,
-      });
-
-      const correctedCenterAltitude =
-        centerAltAz.altitude + atmosphericRefraction(centerAltAz.altitude);
-
-      const starsMap = new Map();
-      for (const star of constellation.stars) {
-        const altAz = raDecToAltAz({
-          raDeg: star.ra,
-          decDeg: star.dec,
-          lst,
-          latitudeDeg: location.latitude,
-        });
-
-        const correctedAltitude =
-          altAz.altitude + atmosphericRefraction(altAz.altitude);
-
-        starsMap.set(star.id, { alt: correctedAltitude, az: altAz.azimuth });
-      }
-
-      skyMap.set(constellation.id, {
-        centerAlt: correctedCenterAltitude,
-        centerAz: centerAltAz.azimuth,
-        stars: starsMap,
-      });
-    }
-
-    localSkyCache = {
-      expireAt: timestamp + LST_CACHE_TTL_MS,
-      latitudeDeg: location.latitude,
-      longitudeDeg: location.longitude,
-      lst,
-      constellations: skyMap,
-    };
-  }
-
-  const cachedSky = localSkyCache.constellations;
+  const cachedSky = skyCache.getCachedSky(location, timestamp, date);
 
   return CONSTELLATIONS.map((constellation) => {
     const skyData = cachedSky.get(constellation.id)!;

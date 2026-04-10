@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { computeVisibleConstellations } from '../astronomy';
+import { computeVisibleConstellations, SkyCache } from '../astronomy';
 import { WARSAW_FALLBACK_LOCATION } from '../constants/defaults';
 import useARSession from './useARSession';
 import useCalibration from './useCalibration';
@@ -23,6 +23,7 @@ export default function useAppContentState() {
   const debugMode = __DEV__;
   const [currentScreen, setCurrentScreen] = useState<AppContentScreen>('ar');
   const [selectedConstellationId, setSelectedConstellationId] = useState<string | null>(null);
+  const [skyCache] = useState(() => new SkyCache());
   const {
     location,
     errorKind: locationErrorKind,
@@ -95,8 +96,9 @@ export default function useAppContentState() {
         calibration: effectiveCalibration,
         screenWidth: width,
         screenHeight: height,
+        skyCache,
       }),
-    [effectiveCalibration, effectiveLocation, effectiveOrientation, height, width],
+    [effectiveCalibration, effectiveLocation, effectiveOrientation, height, width, skyCache],
   );
   const selectedConstellation = useMemo(
     () =>

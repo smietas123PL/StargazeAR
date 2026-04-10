@@ -22,7 +22,6 @@ import type { LayoutMetrics } from '../utils/layout';
 
 type ControlsContainerProps = {
   currentScreen: 'ar' | 'calibration';
-  debugMode: boolean;
   layout: LayoutMetrics;
   isMockEnabled: boolean;
   isInfoPanelOpen: boolean;
@@ -30,9 +29,6 @@ type ControlsContainerProps = {
   location: UserLocation | null;
   effectiveLocation: UserLocation;
   locationErrorKind: LocationErrorKind | null;
-  cameraReady: boolean;
-  constellations: ProjectedConstellation[];
-  effectiveCalibration: CalibrationData;
   onOpenCalibration: () => void;
 };
 
@@ -53,7 +49,6 @@ function getLocationBannerCopy(errorKind: LocationErrorKind | null) {
 
 export default function ControlsContainer({
   currentScreen,
-  debugMode,
   layout,
   isMockEnabled,
   isInfoPanelOpen,
@@ -61,9 +56,6 @@ export default function ControlsContainer({
   location,
   effectiveLocation,
   locationErrorKind,
-  cameraReady,
-  constellations,
-  effectiveCalibration,
   onOpenCalibration,
 }: ControlsContainerProps) {
   const { theme } = useTheme();

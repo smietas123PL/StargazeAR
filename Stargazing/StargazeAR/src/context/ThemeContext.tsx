@@ -2,9 +2,12 @@ import {
   createContext,
   type PropsWithChildren,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View } from '../utils/reactNative';
 
 import { Palette } from '../constants/palette';
 
@@ -201,16 +204,48 @@ function createTheme(mode: 'day' | 'night'): AppTheme {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+const THEME_STORAGE_KEY = '@StargazeAR/theme_nightMode';
+
 export function ThemeProvider({ children }: PropsWithChildren) {
   const [nightMode, setNightMode] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadTheme() {
+      try {
+        const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (stored !== null) {
+          setNightMode(stored === 'true');
+        }
+      } catch (error) {
+        console.warn('Failed to load theme preference:', error);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+
+    void loadTheme();
+  }, []);
 
   const value = useMemo(
     () => ({
       theme: createTheme(nightMode ? 'night' : 'day'),
-      toggleTheme: () => setNightMode((previous) => !previous),
+      toggleTheme: () => {
+        setNightMode((previous) => {
+          const next = !previous;
+          AsyncStorage.setItem(THEME_STORAGE_KEY, String(next)).catch((error) => {
+            console.warn('Failed to save theme preference:', error);
+          });
+          return next;
+        });
+      },
     }),
     [nightMode],
   );
+
+  if (!isLoaded) {
+    return <View style={{ flex: 1, backgroundColor: '#050A14' }} />;
+  }
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

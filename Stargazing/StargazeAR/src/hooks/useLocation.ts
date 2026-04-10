@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 
@@ -23,6 +23,7 @@ export default function useLocation(): UseLocationResult {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isHighAccuracyEnabled, setIsHighAccuracyEnabled] =
     useState<boolean>(false);
+  const subscriptionRef = useRef<Location.LocationSubscription | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,9 +57,27 @@ export default function useLocation(): UseLocationResult {
           }
         }
 
-        let locationSubscription: Location.LocationSubscription | null = null;
+        if (isMounted && !location) {
+          try {
+            const initialPosition = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Balanced,
+            });
+            if (isMounted) {
+              setLocation({
+                latitude: initialPosition.coords.latitude,
+                longitude: initialPosition.coords.longitude,
+                altitude: initialPosition.coords.altitude ?? null,
+                timestamp: initialPosition.timestamp ?? Date.now(),
+              });
+              setErrorKind(null);
+              setIsLoading(false);
+            }
+          } catch {
+            // Ignore failure here, watchPositionAsync might still succeed
+          }
+        }
 
-        locationSubscription = await Location.watchPositionAsync(
+        const locationSubscription = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.Balanced,
             timeInterval: 10000,
@@ -66,7 +85,6 @@ export default function useLocation(): UseLocationResult {
           },
           (currentPosition: Location.LocationObject) => {
             if (!isMounted) {
-              locationSubscription?.remove();
               return;
             }
 
@@ -81,8 +99,10 @@ export default function useLocation(): UseLocationResult {
           }
         );
 
-        if (!isMounted && locationSubscription) {
+        if (!isMounted) {
           locationSubscription.remove();
+        } else {
+          subscriptionRef.current = locationSubscription;
         }
 
       } catch {
@@ -100,6 +120,7 @@ export default function useLocation(): UseLocationResult {
 
     return () => {
       isMounted = false;
+      subscriptionRef.current?.remove();
     };
   }, []);
 

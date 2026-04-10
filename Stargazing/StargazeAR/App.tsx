@@ -87,7 +87,6 @@ function AppContent() {
       />
       <ControlsContainer
         currentScreen={currentScreen}
-        debugMode={debugMode}
         layout={layout}
         isMockEnabled={isMockEnabled}
         isInfoPanelOpen={isInfoPanelOpen}
@@ -95,9 +94,6 @@ function AppContent() {
         location={location}
         effectiveLocation={effectiveLocation}
         locationErrorKind={locationErrorKind}
-        cameraReady={cameraReady}
-        constellations={visibleConstellations}
-        effectiveCalibration={effectiveCalibration}
         onOpenCalibration={openCalibration}
       />
       {currentScreen === 'ar' ? (
