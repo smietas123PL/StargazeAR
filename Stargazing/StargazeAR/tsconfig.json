@@ -8,7 +8,12 @@
         "src/*"
       ]
     },
-    "jsx": "react-native"
+    "jsx": "react-native",
+    "types": [
+      "react",
+      "react-native",
+      "node"
+    ]
   },
   "include": [
     "App.tsx",
