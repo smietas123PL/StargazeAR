@@ -165,41 +165,35 @@ export default function ConstellationInfo({
     [opacity, translateY],
   );
 
+  const [isRendered, setIsRendered] = useState(isOpen);
+
   useEffect(() => {
     if (isOpen) {
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 0,
-          damping: 18,
-          stiffness: 130,
-          mass: 1,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 220,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ]).start();
-
-      return;
+      setIsRendered(true);
     }
 
     Animated.parallel([
       Animated.timing(translateY, {
-        toValue: CLOSE_TRANSLATE_Y,
-        duration: 220,
-        easing: Easing.in(Easing.quad),
+        toValue: isOpen ? 0 : CLOSE_TRANSLATE_Y,
+        duration: isOpen ? 220 : 220,
+        easing: isOpen ? Easing.out(Easing.quad) : Easing.in(Easing.quad),
         useNativeDriver: true,
       }),
       Animated.timing(opacity, {
-        toValue: 0,
-        duration: 180,
+        toValue: isOpen ? 1 : 0,
+        duration: isOpen ? 220 : 180,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(({ finished }) => {
+      if (finished && !isOpen) {
+        setIsRendered(false);
+      }
+    });
   }, [isOpen, opacity, translateY]);
+
+  if (!isRendered) {
+    return null;
+  }
 
   useEffect(() => {
     if (!selected) {
