@@ -23,7 +23,8 @@
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "types": []
   },
   "include": [
     "App.tsx",
