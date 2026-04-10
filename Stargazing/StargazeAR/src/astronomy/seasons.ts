@@ -5,6 +5,7 @@ export type Season = 'wiosna' | 'lato' | 'jesień' | 'zima';
 /**
  * Zwraca aktualną porę roku na podstawie szerokości geograficznej Polski (półkula północna).
  * Wiosna: Mar-Maj, Lato: Cze-Sie, Jesień: Wrz-Lis, Zima: Gru-Lut
+ * UWAGA: Używamy podziału meteorologicznego (pełne miesiące), nie astronomicznego (20-21 dzień).
  */
 export function getCurrentSeason(date: Date = new Date()): Season {
   const month = date.getMonth() + 1; // 1-12

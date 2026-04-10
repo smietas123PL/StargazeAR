@@ -2,24 +2,34 @@ import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from '../utils/reactNative';
 
 import CenterReticle from '../components/CenterReticle';
+import EdgePointer from '../components/EdgePointer';
 import SkyOverlay from '../components/SkyOverlay';
 import StarOverlay from '../components/StarOverlay';
-import type { ProjectedConstellation } from '../types';
+import type {
+  ProjectedConstellation,
+  ProjectedSolarSystemObject,
+} from '../types';
 import { tapLight } from '../utils/haptics';
 
 type AROverlayContainerProps = {
   isVisible: boolean;
   isInfoPanelOpen: boolean;
+  guidedTarget: ProjectedConstellation | null;
+  focusedConstellationId: string | null;
   selectedConstellationId: string | null;
   constellations: ProjectedConstellation[];
+  solarSystemObjects: ProjectedSolarSystemObject[];
   onSelectConstellation: (id: string) => void;
 };
 
 export default function AROverlayContainer({
   isVisible,
   isInfoPanelOpen,
+  guidedTarget,
+  focusedConstellationId,
   selectedConstellationId,
   constellations,
+  solarSystemObjects,
   onSelectConstellation,
 }: AROverlayContainerProps) {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -50,12 +60,14 @@ export default function AROverlayContainer({
       <SkyOverlay isInfoPanelOpen={isInfoPanelOpen} />
       <CenterReticle
         dimmed={isInfoPanelOpen}
-        focusActive={selectedConstellationId !== null}
+        focusActive={focusedConstellationId !== null}
       />
+      <EdgePointer target={guidedTarget} />
       <StarOverlay
         constellations={constellations}
+        solarSystemObjects={solarSystemObjects}
         onConstellationPress={handleConstellationPress}
-        selectedConstellationId={selectedConstellationId ?? undefined}
+        selectedConstellationId={focusedConstellationId ?? undefined}
       />
     </Animated.View>
   );

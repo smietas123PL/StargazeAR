@@ -1,3 +1,27 @@
+## Premium Pillars Status (2026-04-10)
+
+- [x] Filar 1: Drag to Align (manualne strojenie hybrydowe)
+- [x] Filar 2: Przewodnik na Dzis (Guided Tour)
+  - [x] `useGuidedTour.ts` wybiera top 3 cele po sezonie, `altitude > 20` i widocznosci glownych gwiazd
+  - [x] Dodany `GuidedTourPanel.tsx` jako wysuwana dolna karuzela rekomendacji
+  - [x] Dodany `EdgePointer.tsx` wskazujacy cel poza ekranem
+  - [x] Klikniecie w przewodniku wybiera cel po stronie AR i aktywuje prowadzenie do obiektu
+- [x] Filar 3: Uklad Sloneczny (Ksiezyc i planety)
+  - [x] Dodane lekkie efemerydy w `src/astronomy/ephemeris.ts` dla Ksiezyca, Wenus, Marsa, Jowisza i Saturna
+  - [x] Dodany algorytm wieku i oswietlenia fazy Ksiezyca
+  - [x] Obiekty Ukladu Slonecznego sa rzutowane do AR przez `computeProjectedSolarSystemObjects`
+  - [x] Dodany dynamiczny `MoonSvg` renderowany w `StarOverlay.tsx`
+- [x] Filar 4: Immersja sensoryczna (Sound & Scintillation)
+  - [x] Scintillation gwiazd przy horyzoncie
+  - [x] Dodane `expo-av` oraz `src/audio/AudioManager.ts` z preloadem chime
+  - [x] Reticle uruchamia pitch-shiftowany chime przy wejsciu w gwiazdozbior
+- [x] Filar 5: Niezawodnosc (Zero-Network & Silent Location Fallback)
+  - [x] `useLocation.ts` ma `Promise.race` z timeoutem `5000ms`
+  - [x] Ostatnia udana lokalizacja zapisuje sie do AsyncStorage przez `locationStorage.ts`
+  - [x] Dodany klucz `StorageKeys.lastKnownLocation`
+  - [x] Timeout bez cache pokazuje `LocationFallbackModal` z miastami offline: Krakow, Warszawa, Gdansk
+  - [x] `useAppContentState` i `ControlsContainer` obsluguja zrodla lokalizacji: live, cache, manual fallback, Warsaw fallback
+
 # Design System + Accessibility + Architecture + Interactions + UX Flows + Debt Audit Refactoring — Task List
 
 ## Phase 1: New Token Files

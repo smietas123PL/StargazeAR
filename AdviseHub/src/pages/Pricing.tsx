@@ -74,7 +74,7 @@ export default function Pricing() {
           price="0 PLN"
           description="Idealny na start, aby przetestować możliwości Rady Doradczej AI."
           features={[
-            "Maksymalnie 5 sesji doradczych miesięcznie",
+            "2 sesje doradcze miesięcznie (bez limitu dla Pro)",
             "Dostęp do 5 domyślnych doradców",
             "Podstawowa synteza Chairmana",
             "Historia sesji (ograniczona)"
@@ -115,7 +115,7 @@ export default function Pricing() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {[
-                { name: "Liczba sesji doradczych", free: "5 / miesiąc", pro: "Nielimitowana" },
+                { name: "Liczba sesji doradczych", free: "2 / miesiąc", pro: "Nielimitowana" },
                 { name: "Domyślni doradcy (Adwokat Diabła, itp.)", free: "Tak", pro: "Tak" },
                 { name: "Własni doradcy (Custom Board)", free: "-", pro: "Tak" },
                 { name: "Analiza dokumentów (PDF, TXT, MD)", free: "-", pro: "Tak (do 15MB/plik)" },

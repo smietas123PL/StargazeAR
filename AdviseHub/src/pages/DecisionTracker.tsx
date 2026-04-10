@@ -43,13 +43,11 @@ export default function DecisionTracker() {
 
   const handleStatusChange = async (sessionId: string, decisionId: string, newStatus: DecisionStatus) => {
     try {
-      const session = sessions.find(s => s.id === sessionId);
-      if (!session || !session.decisions) return;
+      // The select is rendered from `filteredDecisions`, so the matching session and decision exist here.
+      const session = sessions.find(s => s.id === sessionId)!;
+      const decision = session.decisions!.find(d => d.id === decisionId)!;
 
-      const decision = session.decisions.find(d => d.id === decisionId);
-      if (!decision) return;
-
-      const updatedDecisions = session.decisions.map(d => 
+      const updatedDecisions = session.decisions!.map(d => 
         d.id === decisionId ? { ...d, status: newStatus } : d
       );
 
@@ -79,13 +77,13 @@ export default function DecisionTracker() {
   };
 
   const handleSaveOutcome = async () => {
-    if (!editingDecision) return;
     try {
-      const session = sessions.find(s => s.id === (editingDecision as any).sessionId);
-      if (!session || !session.decisions) return;
+      // The save action is only available while a decision is actively being edited.
+      const currentDecision = editingDecision!;
+      const session = sessions.find(s => s.id === (currentDecision as any).sessionId)!;
 
-      const updatedDecisions = session.decisions.map(d => 
-        d.id === editingDecision.id ? { ...d, actualOutcome: editOutcome } : d
+      const updatedDecisions = session.decisions!.map(d => 
+        d.id === currentDecision.id ? { ...d, actualOutcome: editOutcome } : d
       );
 
       await updateDoc(doc(db, 'sessions', session.id), { decisions: updatedDecisions });

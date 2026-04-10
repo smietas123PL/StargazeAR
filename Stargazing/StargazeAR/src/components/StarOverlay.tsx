@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -13,14 +13,19 @@ import Svg, {
   Text as SvgText,
 } from 'react-native-svg';
 
+import MoonSvg from './MoonSvg';
 import { calculateStarRadius } from '../utils/projection';
 import { ZIndex } from '../constants/zIndex';
 import { useTheme } from '../context/ThemeContext';
 import { tapLight } from '../utils/haptics';
-import type { ProjectedConstellation } from '../types';
+import type {
+  ProjectedConstellation,
+  ProjectedSolarSystemObject,
+} from '../types';
 
 type StarOverlayProps = {
   constellations: ProjectedConstellation[];
+  solarSystemObjects?: ProjectedSolarSystemObject[];
   onConstellationPress: (id: string) => void;
   selectedConstellationId?: string;
   debugMode?: boolean;
@@ -90,6 +95,8 @@ const CENTER_FOCUS_ATTENUATION_MAX_REDUCTION = 0.08;
 const LABEL_PILL_CORNER_RADIUS = 12;
 const LABEL_PILL_VERTICAL_INSET = 2;
 const LABEL_PILL_HEIGHT_REDUCTION = 4;
+const TWINKLE_INTERVAL_MS = 90;
+const TWINKLE_LOW_ALTITUDE_THRESHOLD = 30;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -184,6 +191,39 @@ function getLabelId(label: RenderableLabel) {
   return label.constellation.data.id;
 }
 
+function hashString(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 100000;
+  }
+
+  return hash;
+}
+
+function getTwinkleMultiplier(
+  starId: string,
+  altitude: number,
+  timeSeconds: number,
+) {
+  if (altitude >= TWINKLE_LOW_ALTITUDE_THRESHOLD) {
+    return 1;
+  }
+
+  const horizonFactor = clamp(
+    (TWINKLE_LOW_ALTITUDE_THRESHOLD - altitude) /
+      TWINKLE_LOW_ALTITUDE_THRESHOLD,
+    0,
+    1,
+  );
+  const phase = ((hashString(starId) % 360) * Math.PI) / 180;
+  const speed = 0.4 + horizonFactor * 0.6;
+  const wave =
+    0.5 + 0.5 * Math.sin(timeSeconds * Math.PI * 2 * speed + phase);
+
+  return 0.68 + wave * (0.18 + horizonFactor * 0.24);
+}
+
 /**
  * Nakladka nieba renderowana jako jedno pelnoekranowe SVG.
  *
@@ -192,6 +232,7 @@ function getLabelId(label: RenderableLabel) {
  */
 export default function StarOverlay({
   constellations,
+  solarSystemObjects = [],
   onConstellationPress,
   selectedConstellationId,
   debugMode = false,
@@ -200,6 +241,19 @@ export default function StarOverlay({
   const { width, height } = useWindowDimensions();
   const starScreenPositionsRef = useRef<Record<string, ScreenPosition>>({});
   const labelScreenPositionsRef = useRef<Record<string, ScreenPosition>>({});
+  const [twinkleTimeSeconds, setTwinkleTimeSeconds] = useState(
+    () => Date.now() / 1000,
+  );
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTwinkleTimeSeconds(Date.now() / 1000);
+    }, TWINKLE_INTERVAL_MS);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   function handleConstellationPress(id: string) {
     void tapLight();
@@ -585,7 +639,12 @@ export default function StarOverlay({
                 const starOpacity =
                   finalOpacity *
                   (isFocusActive && !isSelected ? UNSELECTED_STAR_OPACITY : 1) *
-                  centerAttenuationFactor;
+                  centerAttenuationFactor *
+                  getTwinkleMultiplier(
+                    `${constellation.data.id}:${projectedStar.star.id}`,
+                    projectedStar.altitude,
+                    twinkleTimeSeconds,
+                  );
                 const glowRadiusMultiplier =
                   isFocusActive && isSelected
                     ? SELECTED_MAIN_GLOW_RADIUS
@@ -619,6 +678,64 @@ export default function StarOverlay({
                   </G>
                 );
               })}
+            </G>
+          );
+        })}
+
+        {solarSystemObjects.map((object) => {
+          if (!object.isVisible) {
+            return null;
+          }
+
+          const isMoon = object.data.kind === 'moon';
+          const objectRadius = isMoon ? 8 : 5;
+          const labelY = object.screen.y - (isMoon ? 16 : 14);
+
+          return (
+            <G key={`solar-${object.data.id}`}>
+              {isMoon ? (
+                <MoonSvg
+                  cx={object.screen.x}
+                  cy={object.screen.y}
+                  radius={objectRadius}
+                  illumination={object.data.illumination ?? 0}
+                  waxing={object.data.waxing ?? true}
+                  lightColor={theme.white}
+                  darkColor={theme.overlay}
+                  strokeColor={theme.starLabel}
+                />
+              ) : (
+                <>
+                  <Circle
+                    cx={object.screen.x}
+                    cy={object.screen.y}
+                    r={objectRadius * 2.1}
+                    fill="none"
+                    stroke={object.data.color}
+                    strokeWidth={objectRadius * 0.9}
+                    opacity={0.24}
+                  />
+                  <Circle
+                    cx={object.screen.x}
+                    cy={object.screen.y}
+                    r={objectRadius}
+                    fill={object.data.color}
+                  />
+                </>
+              )}
+
+              <SvgText
+                x={object.screen.x}
+                y={labelY}
+                fill={theme.starLabel}
+                fontSize={11}
+                fontWeight="700"
+                textAnchor="middle"
+              >
+                {object.data.kind === 'moon'
+                  ? `Ksiezyc ${Math.round((object.data.illumination ?? 0) * 100)}%`
+                  : object.data.name}
+              </SvgText>
             </G>
           );
         })}

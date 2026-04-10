@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 
 type UseARSessionParams = {
-  currentScreen: 'ar' | 'calibration';
+  currentScreen: 'ar' | 'calibration' | 'drag_align';
 };
 
 export default function useARSession({

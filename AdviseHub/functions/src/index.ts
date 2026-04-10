@@ -1,4 +1,5 @@
-import * as functions from 'firebase-functions';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import { GoogleGenAI } from '@google/genai';
 
@@ -18,13 +19,12 @@ const db = admin.firestore();
 // 4. W kodzie funkcji (poniżej) używamy defineSecret, aby powiązać secret z funkcją.
 // ============================================================================
 
-import { defineSecret } from 'firebase-functions/params';
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
 
 const getGeminiClient = () => {
   const apiKey = geminiApiKey.value();
   if (!apiKey) {
-    throw new functions.https.HttpsError('internal', 'Brak klucza API Gemini w konfiguracji serwera.');
+    throw new HttpsError('internal', 'Brak klucza API Gemini w konfiguracji serwera.');
   }
   return new GoogleGenAI({ apiKey });
 };
@@ -78,16 +78,14 @@ const rateLimitCheck = async (userId: string): Promise<boolean> => {
   });
 };
 
-export const generateAdvisorResponse = functions
-  .runWith({ secrets: [geminiApiKey] })
-  .https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Wymagane logowanie.');
+export const generateAdvisorResponse = onCall({ secrets: [geminiApiKey], cors: true }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Wymagane logowanie.');
   }
 
-  const isAllowed = await rateLimitCheck(context.auth.uid);
+  const isAllowed = await rateLimitCheck(request.auth.uid);
   if (!isAllowed) {
-    throw new functions.https.HttpsError('resource-exhausted', 'Rate limit exceeded. Spróbuj za godzinę.');
+    throw new HttpsError('resource-exhausted', 'Rate limit exceeded. Spróbuj za godzinę.');
   }
 
   const { 
@@ -99,7 +97,7 @@ export const generateAdvisorResponse = functions
     enableSearch = false,
     responseMimeType,
     responseSchema
-  } = data;
+  } = request.data;
 
   let finalPrompt = prompt;
   if (!finalPrompt && question) {
@@ -107,7 +105,7 @@ export const generateAdvisorResponse = functions
   }
 
   if (!finalPrompt) {
-    throw new functions.https.HttpsError('invalid-argument', 'Brak promptu lub pytania.');
+    throw new HttpsError('invalid-argument', 'Brak promptu lub pytania.');
   }
 
   try {
@@ -144,25 +142,23 @@ export const generateAdvisorResponse = functions
     return { text: response.text || "Brak odpowiedzi." };
   } catch (error: any) {
     console.error('Błąd Gemini API:', error);
-    throw new functions.https.HttpsError('internal', 'Błąd podczas generowania odpowiedzi.', error.message);
+    throw new HttpsError('internal', 'Błąd podczas generowania odpowiedzi.', error.message);
   }
 });
 
-export const embedContent = functions
-  .runWith({ secrets: [geminiApiKey] })
-  .https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Wymagane logowanie.');
+export const embedContent = onCall({ secrets: [geminiApiKey], cors: true }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Wymagane logowanie.');
   }
 
-  const isAllowed = await rateLimitCheck(context.auth.uid);
+  const isAllowed = await rateLimitCheck(request.auth.uid);
   if (!isAllowed) {
-    throw new functions.https.HttpsError('resource-exhausted', 'Rate limit exceeded. Spróbuj za godzinę.');
+    throw new HttpsError('resource-exhausted', 'Rate limit exceeded. Spróbuj za godzinę.');
   }
 
-  const { text } = data;
+  const { text } = request.data;
   if (!text) {
-    throw new functions.https.HttpsError('invalid-argument', 'Brak tekstu do wektoryzacji.');
+    throw new HttpsError('invalid-argument', 'Brak tekstu do wektoryzacji.');
   }
 
   try {
@@ -175,6 +171,6 @@ export const embedContent = functions
     return { embeddings: result.embeddings };
   } catch (error: any) {
     console.error('Błąd Gemini API (embed):', error);
-    throw new functions.https.HttpsError('internal', 'Błąd podczas wektoryzacji.', error.message);
+    throw new HttpsError('internal', 'Błąd podczas wektoryzacji.', error.message);
   }
 });

@@ -1,15 +1,28 @@
+import { useState, useEffect } from 'react';
 import { MessageRole } from '../../types';
 import { Card } from '../ui/card';
 import ReactMarkdown from 'react-markdown';
 import { useCustomAdvisors } from '../../hooks/useCustomAdvisors';
+import { cn } from '../../lib/utils';
 
 interface AdvisorCardProps {
   role: MessageRole;
   content: string;
+  isNew?: boolean;
 }
 
-export function AdvisorCard({ role, content }: AdvisorCardProps) {
+export function AdvisorCard({ role, content, isNew = false }: AdvisorCardProps) {
   const { allAdvisors } = useCustomAdvisors();
+  const [revealed, setRevealed] = useState(!isNew);
+  
+  useEffect(() => {
+    if (isNew && !revealed) {
+      const timer = setTimeout(() => {
+        setRevealed(true);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isNew, revealed]);
   
   const advisor = allAdvisors.find(a => a.role === role);
   
@@ -48,9 +61,18 @@ export function AdvisorCard({ role, content }: AdvisorCardProps) {
             <span className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant leading-tight">{advisor.nameEn}</span>
           </div>
         </div>
-        <div className={markdownStyles}>
-          <ReactMarkdown>{content}</ReactMarkdown>
-        </div>
+        
+        {revealed ? (
+          <div className={cn(markdownStyles, isNew && "animate-in fade-in duration-500")}>
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="h-4 w-full bg-white/5 rounded animate-pulse" />
+            <div className="h-4 w-[90%] bg-white/5 rounded animate-pulse" />
+            <div className="h-4 w-[75%] bg-white/5 rounded animate-pulse" />
+          </div>
+        )}
       </div>
     </Card>
   );

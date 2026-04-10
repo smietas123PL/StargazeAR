@@ -1,6 +1,7 @@
 /// <reference types="jest" />
 
 import { raDecToAltAz } from '../coordinates';
+import { computeSolarSystemObjects, getMoonPhase } from '../ephemeris';
 import {
   greenwichMeanSiderealTime,
   julianDate,
@@ -59,5 +60,36 @@ describe('astronomy core math', () => {
     expect(result.altitude).toBeLessThan(60);
     expect(result.azimuth).toBeGreaterThan(120);
     expect(result.azimuth).toBeLessThan(220);
+  });
+
+  it('returns finite RA/Dec values for Moon and supported planets', () => {
+    const result = computeSolarSystemObjects(new Date('2026-04-10T21:00:00Z'));
+
+    expect(result.map((object) => object.id)).toEqual([
+      'moon',
+      'venus',
+      'mars',
+      'jupiter',
+      'saturn',
+    ]);
+
+    for (const object of result) {
+      expect(Number.isFinite(object.ra)).toBe(true);
+      expect(Number.isFinite(object.dec)).toBe(true);
+      expect(object.ra).toBeGreaterThanOrEqual(0);
+      expect(object.ra).toBeLessThan(360);
+      expect(object.dec).toBeGreaterThanOrEqual(-90);
+      expect(object.dec).toBeLessThanOrEqual(90);
+    }
+  });
+
+  it('calculates Moon phase age and illumination in stable ranges', () => {
+    const result = getMoonPhase(new Date('2026-04-10T21:00:00Z'));
+
+    expect(result.ageDays).toBeGreaterThanOrEqual(0);
+    expect(result.ageDays).toBeLessThan(29.6);
+    expect(result.illumination).toBeGreaterThanOrEqual(0);
+    expect(result.illumination).toBeLessThanOrEqual(1);
+    expect(typeof result.waxing).toBe('boolean');
   });
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+﻿import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '../ui/button';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -25,7 +25,6 @@ interface DocumentUploadProps {
 }
 
 export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, disabled = false, onUpgradeRequest }: DocumentUploadProps) {
-  const [isDragging, setIsDragging] = useState(false);
   const { user } = useAuth();
   const { processAndSaveDocument } = useDocumentRAG();
 
@@ -45,7 +44,7 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
       return fullText.trim();
     } catch (error) {
       console.error('Error extracting PDF text:', error);
-      throw new Error('Nie udało się odczytać pliku PDF.');
+      throw new Error('Nie udaÅ‚o siÄ™ odczytaÄ‡ pliku PDF.');
     }
   };
 
@@ -53,36 +52,11 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = () => reject(new Error('Nie udało się odczytać pliku tekstowego.'));
+      reader.onerror = () => reject(new Error('Nie udaÅ‚o siÄ™ odczytaÄ‡ pliku tekstowego.'));
       reader.readAsText(file);
     });
   };
 
-  const processFile = async (file: File) => {
-    const newAttachedFile: AttachedFile = {
-      file,
-      extractedText: '',
-      isExtracting: true,
-    };
-
-    // Add to state immediately to show loading
-    onChange([...files, newAttachedFile]);
-
-    try {
-      let text = '';
-      if (file.type === 'application/pdf') {
-        text = await extractTextFromPdf(file);
-      } else if (file.type === 'text/plain' || file.name.endsWith('.md')) {
-        text = await extractTextFromTxt(file);
-      } else {
-        throw new Error('Nieobsługiwany format pliku. Dozwolone: PDF, TXT, MD.');
-      }
-
-      onChange(files.map(f => f.file === file ? { ...f, extractedText: text, isExtracting: false } : f).concat({ ...newAttachedFile, extractedText: text, isExtracting: false }));
-    } catch (error: any) {
-      onChange(files.map(f => f.file === file ? { ...f, isExtracting: false, error: error.message } : f).concat({ ...newAttachedFile, isExtracting: false, error: error.message }));
-    }
-  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (disabled) {
@@ -91,7 +65,7 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
     }
 
     if (files.length + acceptedFiles.length > maxFiles) {
-      alert(`Możesz wgrać maksymalnie ${maxFiles} plików.`);
+      alert(`MoÅ¼esz wgraÄ‡ maksymalnie ${maxFiles} plikÃ³w.`);
       return;
     }
 
@@ -100,7 +74,7 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
 
     for (const file of acceptedFiles) {
       if (file.size > maxSizeMB * 1024 * 1024) {
-        alert(`Plik ${file.name} jest za duży. Maksymalny rozmiar to ${maxSizeMB}MB.`);
+        alert(`Plik ${file.name} jest za duÅ¼y. Maksymalny rozmiar to ${maxSizeMB}MB.`);
         continue;
       }
       
@@ -125,7 +99,7 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
         } else if (attachedFile.file.type === 'text/plain' || attachedFile.file.name.endsWith('.md')) {
           text = await extractTextFromTxt(attachedFile.file);
         } else {
-          throw new Error('Nieobsługiwany format pliku.');
+          throw new Error('NieobsÅ‚ugiwany format pliku.');
         }
 
         if (user) {
@@ -183,10 +157,10 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
         <input {...getInputProps()} />
         <span className="material-symbols-outlined text-3xl text-zinc-400 mb-2">upload_file</span>
         <p className="text-sm text-zinc-300 font-medium">
-          {isDragActive ? 'Upuść pliki tutaj...' : 'Przeciągnij i upuść dokumenty lub kliknij, aby wybrać'}
+          {isDragActive ? 'UpuÅ›Ä‡ pliki tutaj...' : 'PrzeciÄ…gnij i upuÅ›Ä‡ dokumenty lub kliknij, aby wybraÄ‡'}
         </p>
         <p className="text-xs text-zinc-500 mt-1">
-          Obsługiwane formaty: PDF, TXT, MD (max {maxFiles} plików, {maxSizeMB} MB każdy)
+          ObsÅ‚ugiwane formaty: PDF, TXT, MD (max {maxFiles} plikÃ³w, {maxSizeMB} MB kaÅ¼dy)
         </p>
       </div>
 
@@ -235,3 +209,4 @@ export function DocumentUpload({ files, onChange, maxFiles = 5, maxSizeMB = 15, 
     </div>
   );
 }
+

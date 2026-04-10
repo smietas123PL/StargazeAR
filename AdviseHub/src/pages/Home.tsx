@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '../lib/utils';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -22,6 +24,41 @@ export default function Home() {
   const { checkFeatureAccess, maxFreeSessions, completedSessionsThisMonth, isPro } = useUserPlan();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState('');
+
+  // Wizard State
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(1);
+  const [wizardData, setWizardData] = useState({
+    goal: '',
+    knowledge: '',
+    blocker: ''
+  });
+
+  const wizardSteps = useMemo(() => [
+    {
+      id: 1,
+      title: "Jaki jest Twój główny cel?",
+      description: "np. zwiększenie przychodów, zredukowanie ryzyka, wybór między opcjami",
+      field: 'goal' as const,
+      placeholder: "Mój główny cel to..."
+    },
+    {
+      id: 2,
+      title: "Jakie masz już informacje lub przekonania na ten temat?",
+      description: "Opisz co już wiesz lub co podpowiada Ci intuicja.",
+      field: 'knowledge' as const,
+      placeholder: "Obecnie wiem, że..."
+    },
+    {
+      id: 3,
+      title: "Co blokuje Cię przed podjęciem decyzji już teraz?",
+      description: "Zidentyfikuj główne przeszkody lub wątpliwości.",
+      field: 'blocker' as const,
+      placeholder: "Blokuje mnie..."
+    }
+  ], []);
+
+  const currentWizardStep = wizardSteps[wizardStep - 1];
 
   // Initialize selected advisors to all available advisors when they load
   useEffect(() => {
@@ -72,9 +109,9 @@ export default function Home() {
     });
   };
 
-  const handleStartSession = async () => {
+  const handleStartSession = () => {
     if (selectedAdvisors.length < 3) {
-      return; // Validation handled in UI
+      return;
     }
     
     if (!checkFeatureAccess('unlimitedSessions')) {
@@ -83,7 +120,34 @@ export default function Home() {
       return;
     }
     
-    await createSession(question, attachedFiles, selectedAdvisors);
+    setIsWizardOpen(true);
+    setWizardStep(1);
+    setWizardData({ goal: '', knowledge: '', blocker: '' });
+  };
+
+  const handleWizardNext = async () => {
+    if (wizardStep < 3) {
+      setWizardStep(prev => prev + 1);
+    } else {
+      await finalizeAndCreateSession();
+    }
+  };
+
+  const handleWizardSkip = async () => {
+    setWizardData(prev => ({ ...prev, [currentWizardStep.field]: '' }));
+    if (wizardStep < 3) {
+      setWizardStep(prev => prev + 1);
+    } else {
+      await finalizeAndCreateSession();
+    }
+  };
+
+  const finalizeAndCreateSession = async () => {
+    const { goal, knowledge, blocker } = wizardData;
+    const finalQuestion = `${question}\n\n--- Dodatkowy kontekst ---\nCel: ${goal || 'Nie podano'}\nObecna wiedza: ${knowledge || 'Nie podano'}\nBlokery: ${blocker || 'Nie podano'}`;
+    
+    setIsWizardOpen(false);
+    await createSession(finalQuestion, attachedFiles, selectedAdvisors);
   };
 
   const exampleDecisions = [
@@ -309,14 +373,26 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <p className="text-sm text-zinc-400 mb-4 text-center">
+            <div className="text-sm text-zinc-400 mb-4 text-center">
               Rada przeanalizuje Twoje pytanie oraz załączone dokumenty.
               {!isPro && (
-                <span className="block mt-1 text-xs text-primary/80">
-                  Wykorzystano {completedSessionsThisMonth} z {maxFreeSessions} darmowych sesji w tym miesiącu.
-                </span>
+                <div className="mt-2 flex flex-col items-center gap-2">
+                  {completedSessionsThisMonth === 1 && (
+                    <motion.div 
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] font-bold uppercase tracking-wider"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                      Ostatnia bezpłatna sesja w tym miesiącu
+                    </motion.div>
+                  )}
+                  <span className="text-xs text-primary/80">
+                    Wykorzystano {completedSessionsThisMonth} z {maxFreeSessions} bezpłatnych sesji. Plan Pro — nielimitowany dostęp od 59 zł/mies.
+                  </span>
+                </div>
               )}
-            </p>
+            </div>
             <Button 
               type="button"
               onClick={handleStartSession}
@@ -340,6 +416,91 @@ export default function Home() {
         onClose={() => setShowUpgradeModal(false)} 
         featureName={upgradeFeature} 
       />
+
+      {/* Context Wizard Modal */}
+      <AnimatePresence>
+        {isWizardOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-2xl bg-surface-container-high border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden"
+            >
+              {/* Progress Bar */}
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-primary to-secondary"
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${(wizardStep / 3) * 100}%` }}
+                  transition={{ type: "spring", stiffness: 50, damping: 20 }}
+                />
+              </div>
+
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                    Krok {wizardStep} z 3
+                  </span>
+                  <button 
+                    onClick={() => setIsWizardOpen(false)}
+                    className="text-zinc-500 hover:text-white transition-colors"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                
+                <h2 className="text-2xl md:text-3xl font-headline font-black text-white mb-3 leading-tight">
+                  {currentWizardStep.title}
+                </h2>
+                <p className="text-zinc-400 text-sm md:text-base">
+                  {currentWizardStep.description}
+                </p>
+              </div>
+
+              <div className="mb-10">
+                <Textarea 
+                  value={wizardData[currentWizardStep.field]}
+                  onChange={(e) => setWizardData(prev => ({ ...prev, [currentWizardStep.field]: e.target.value.slice(0, 300) }))}
+                  className="w-full bg-surface-container-highest/50 border-white/10 focus:border-primary/50 text-white placeholder-zinc-600 resize-none font-body text-lg min-h-[160px] p-6 rounded-2xl transition-all"
+                  placeholder={currentWizardStep.placeholder}
+                  autoFocus
+                />
+                <div className="flex justify-end mt-2">
+                  <span className={cn(
+                    "text-[10px] font-mono",
+                    wizardData[currentWizardStep.field].length >= 300 ? "text-red-400" : "text-zinc-500"
+                  )}>
+                    {wizardData[currentWizardStep.field].length} / 300
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Button 
+                  onClick={handleWizardNext}
+                  className="w-full sm:flex-1 h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-[#003851] font-headline font-extrabold text-sm uppercase tracking-widest shadow-lg hover:opacity-90 transition-all"
+                >
+                  {wizardStep === 3 ? 'Zakończ i wyślij' : 'Dalej'}
+                  <span className="material-symbols-outlined ml-2">arrow_forward</span>
+                </Button>
+                <Button 
+                  variant="ghost"
+                  onClick={handleWizardSkip}
+                  className="w-full sm:w-auto px-8 h-14 rounded-full text-zinc-400 hover:text-white hover:bg-white/5 font-bold"
+                >
+                  Pomiń ten krok
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

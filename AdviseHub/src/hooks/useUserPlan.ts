@@ -16,7 +16,7 @@ export function useUserPlan() {
     s => s.status === 'completed' && s.createdAt >= startOfMonth
   ).length;
 
-  const MAX_FREE_SESSIONS = 5;
+  const MAX_FREE_SESSIONS = 2;
   const rateLimit = isPro ? 150 : 20;
 
   const checkFeatureAccess = (feature: 'documents' | 'customAdvisors' | 'unlimitedSessions') => {

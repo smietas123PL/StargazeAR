@@ -71,13 +71,57 @@ Opis + konkretny termin.
 > "Tutaj JEDEN, bardzo konkretny i actionable krok do wykonania w ciągu najbliższych 24 godzin."`;
 
       const generateAdvisorResponseFn = httpsCallable(functions, 'generateAdvisorResponse');
-      const response = await generateAdvisorResponseFn({
+
+      const validateAdvisorResponse = (text: string): boolean => {
+        if (text.length < 100) return false;
+        if (text.length > 15000) return false;
+        
+        const failedPatterns = [
+          "I'm sorry", 
+          "I cannot", 
+          "jako model językowy", 
+          "jako AI nie mogę", 
+          "nie jestem w stanie odpowiedzieć"
+        ];
+        
+        if (failedPatterns.some(pattern => text.toLowerCase().includes(pattern.toLowerCase()))) {
+          return false;
+        }
+        
+        // Check if contains any letters (including Polish characters)
+        if (!/[a-zA-Z\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u00D3\u00F3\u015A\u015B\u0179\u017A\u017B\u017C]/.test(text)) {
+          return false;
+        }
+        
+        return true;
+      };
+
+      let response = await generateAdvisorResponseFn({
         prompt,
         systemInstruction: "Jesteś Przewodniczącym Rady (The Chairman). Jesteś autorytetem, podejmujesz ostateczne decyzje. Mówisz krótko, stanowczo i z absolutną pewnością. Zawsze formatuj odpowiedź zgodnie z wymaganymi sekcjami.",
         temperature: 0.5
       });
 
-      const responseText = (response.data as any).text || "Brak werdyktu.";
+      let responseText = (response.data as any).text || "";
+
+      // Validation and Retry
+      if (!validateAdvisorResponse(responseText)) {
+        console.warn("Walidacja werdyktu Chairmana nieudana, ponawiam próbę...");
+        response = await generateAdvisorResponseFn({
+          prompt,
+          systemInstruction: "Jesteś Przewodniczącym Rady (The Chairman). Jesteś autorytetem, podejmujesz ostateczne decyzje. Mówisz krótko, stanowczo i z absolutną pewnością. Zawsze formatuj odpowiedź zgodnie z wymaganymi sekcjami.",
+          temperature: 0.6 // temperature + 0.1
+        });
+        responseText = (response.data as any).text || "";
+
+        if (!validateAdvisorResponse(responseText)) {
+          const sessionRef = doc(db, 'sessions', sessionId);
+          await updateDoc(sessionRef, { status: 'failed' });
+          toast.error("Przewodniczący nie był w stanie wydać werdyktu. Spróbuj ponownie.");
+          setIsRunning(false);
+          return;
+        }
+      }
 
       // Zapisz wiadomość Chairmana
       const messageRef = doc(collection(db, `sessions/${sessionId}/messages`));

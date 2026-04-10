@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './providers/AuthProvider';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -21,6 +22,26 @@ import KnowledgeVault from './pages/KnowledgeVault';
 
 function AppRoutes() {
   const { loading, user } = useAuth();
+
+  useEffect(() => {
+    if (user?.uid) {
+      const upgradeToPro = async () => {
+        try {
+          const { doc, updateDoc, getDoc } = await import('firebase/firestore');
+          const { db } = await import('./lib/firebase');
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists() && userSnap.data().plan !== 'pro') {
+            await updateDoc(userRef, { plan: 'pro' });
+            console.log('💎 Konto podniesione do PRO!');
+          }
+        } catch (e) {
+          console.error('Błąd podczas auto-upgrade:', e);
+        }
+      };
+      upgradeToPro();
+    }
+  }, [user]);
 
   if (loading) {
     return (

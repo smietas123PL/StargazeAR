@@ -67,7 +67,31 @@ export interface UserLocation {
 /**
  * Rozróżnienie przyczyny problemu z lokalizacją używane przez UI.
  */
-export type LocationErrorKind = 'permission_denied' | 'location_failed';
+export type LocationErrorKind =
+  | 'permission_denied'
+  | 'location_failed'
+  | 'timeout';
+
+/**
+ * Źródło aktualnie używanej lokalizacji przez warstwę AR.
+ */
+export type LocationSource =
+  | 'live'
+  | 'cache'
+  | 'manual_fallback'
+  | 'warsaw_fallback';
+
+/**
+ * Ręcznie wybierana lokalizacja offline.
+ */
+export interface OfflineLocationOption {
+  /** Stabilny identyfikator opcji fallback. */
+  id: string;
+  /** Krótka nazwa wyświetlana w UI. */
+  name: string;
+  /** Współrzędne przypisane do wybranej opcji. */
+  location: UserLocation;
+}
 
 /**
  * Gwiazda należąca do gwiazdozbioru.
@@ -121,6 +145,10 @@ export interface ProjectedStar {
   star: Star;
   /** Pozycja gwiazdy na ekranie po projekcji. */
   screen: ScreenPoint;
+  /** Wysokość gwiazdy nad horyzontem w stopniach. */
+  altitude: number;
+  /** Azymut gwiazdy w stopniach 0-360. */
+  azimuth: number;
   /** Czy gwiazda znajduje się w aktualnym obszarze widoku. */
   isVisible: boolean;
 }
@@ -140,6 +168,51 @@ export interface ProjectedConstellation {
   /** Wysokość środka gwiazdozbioru nad horyzontem w stopniach. */
   altitude: number;
   /** Azymut środka gwiazdozbioru w stopniach 0-360. */
+  azimuth: number;
+}
+
+/**
+ * Rodzaj obiektu Układu Słonecznego renderowanego nad obrazem kamery.
+ */
+export type SolarSystemObjectKind = 'planet' | 'moon';
+
+/**
+ * Surowe dane uproszczonego obiektu Układu Słonecznego.
+ */
+export interface SolarSystemObjectData {
+  /** Stabilny identyfikator techniczny obiektu. */
+  id: string;
+  /** Nazwa wyświetlana w UI. */
+  name: string;
+  /** Typ obiektu. */
+  kind: SolarSystemObjectKind;
+  /** Right Ascension w stopniach dziesiętnych. */
+  ra: number;
+  /** Declination w stopniach dziesiętnych. */
+  dec: number;
+  /** Kolor akcentu używany do renderu obiektu. */
+  color: string;
+  /** Wiek fazy Księżyca w dniach, jeśli dotyczy. */
+  phaseAgeDays?: number;
+  /** Oświetlenie tarczy w zakresie 0-1, jeśli dotyczy. */
+  illumination?: number;
+  /** Czy Księżyc przybiera (true) czy ubywa (false), jeśli dotyczy. */
+  waxing?: boolean;
+}
+
+/**
+ * Obiekt Układu Słonecznego po przeliczeniu na ekran urządzenia.
+ */
+export interface ProjectedSolarSystemObject {
+  /** Surowe dane astronomiczne obiektu. */
+  data: SolarSystemObjectData;
+  /** Pozycja obiektu na ekranie po projekcji. */
+  screen: ScreenPoint;
+  /** Czy obiekt znajduje się w aktualnym obszarze widoku. */
+  isVisible: boolean;
+  /** Wysokość obiektu nad horyzontem w stopniach. */
+  altitude: number;
+  /** Azymut obiektu w stopniach 0-360. */
   azimuth: number;
 }
 

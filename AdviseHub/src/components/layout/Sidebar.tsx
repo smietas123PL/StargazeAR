@@ -12,16 +12,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const navItems = [
     { icon: 'add_circle', label: 'Nowa Sesja', path: '/' },
-    { icon: 'record_voice_over', label: 'Voice Chat', path: '/voice-setup' },
-    { icon: 'account_balance', label: 'Baza Wiedzy', path: '/vault' },
-    { icon: 'storefront', label: 'Marketplace', path: '/marketplace' },
-    { icon: 'view_carousel', label: 'Szablony Rad', path: '/templates' },
-    { icon: 'history', label: 'Historia Wywiadów', path: '/history' },
+    { icon: 'history', label: 'Historia Sesji', path: '/history' },
     { icon: 'track_changes', label: 'Tracker Decyzji', path: '/tracker' },
-    { icon: 'group_add', label: 'Wspólne Sesje', path: '/shared' },
     { icon: 'group', label: 'Moja Rada', path: '/board' },
-    { icon: 'settings', label: 'Ustawienia Systemu', path: '/settings' },
-    { icon: 'workspace_premium', label: 'Cennik', path: '/pricing' },
+    { icon: 'account_balance', label: 'Baza Wiedzy', path: '/vault' },
+    { icon: 'workspace_premium', label: 'Ulepsz do Pro', path: '/pricing' },
   ];
 
   return (
@@ -73,13 +68,24 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <p className="text-xs text-zinc-500 truncate">Plan {(profile?.plan === 'pro' || profile?.plan === 'premium') ? 'Pro' : 'Free'}</p>
             </div>
           </div>
-          <button 
-            onClick={() => logout()}
-            className="w-full text-zinc-400 hover:text-white px-4 py-3 flex items-center gap-3 font-body tracking-wide text-sm font-semibold transition-all rounded-xl hover:bg-surface-container-low"
-          >
-            <span className="material-symbols-outlined text-xl">logout</span>
-            <span>Wyloguj</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <NavLink
+              to="/settings"
+              onClick={() => onClose()}
+              className="flex-1 text-zinc-400 hover:text-white px-4 py-2.5 flex items-center gap-3 font-body tracking-wide text-sm font-semibold transition-all rounded-xl hover:bg-surface-container-low"
+              title="Ustawienia"
+            >
+              <span className="material-symbols-outlined text-xl">settings</span>
+              <span>Ustawienia</span>
+            </NavLink>
+            <button 
+              onClick={() => logout()}
+              className="p-2.5 text-zinc-400 hover:text-white hover:bg-surface-container-low rounded-xl transition-all"
+              title="Wyloguj"
+            >
+              <span className="material-symbols-outlined text-xl">logout</span>
+            </button>
+          </div>
         </div>
       </aside>
     </>

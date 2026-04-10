@@ -7,12 +7,16 @@ import {
 import CalibrationScreen from './src/components/CalibrationScreen';
 import CameraBackground from './src/components/CameraBackground';
 import ConstellationInfo from './src/components/ConstellationInfo';
+import DragAlignOverlay from './src/components/DragAlignOverlay';
 import ErrorBoundary from './src/components/ErrorBoundary';
+import GuidedTourPanel from './src/components/GuidedTourPanel';
+import LocationFallbackModal from './src/components/LocationFallbackModal';
 import AROverlayContainer from './src/containers/AROverlayContainer';
 import ControlsContainer from './src/containers/ControlsContainer';
 import HUDContainer from './src/containers/HUDContainer';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import useAppContentState from './src/hooks/useAppContentState';
+import useReticleChime from './src/hooks/useReticleChime';
 
 export default function App() {
   return (
@@ -37,9 +41,13 @@ function AppContent() {
     effectiveCalibration,
     effectiveLocation,
     effectiveOrientation,
+    focusedConstellationId,
+    guidedTargetConstellation,
+    guidedTourItems,
     handleSaveCalibration,
     isArSessionActive,
     isDeviceMotionAvailable,
+    isGuidedTourOpen,
     isInfoPanelOpen,
     isLocationLoading,
     isMockEnabled,
@@ -47,15 +55,28 @@ function AppContent() {
     layout,
     location,
     locationErrorKind,
+    locationSource,
+    offlineLocationOptions,
     onboardingMessageVariant,
+    closeGuidedTour,
     openCalibration,
+    selectOfflineLocation,
+    selectGuidedTourTarget,
+    projectedSolarSystemObjects,
+    reticleTargetConstellation,
     selectedConstellation,
     selectedConstellationId,
+    selectedOfflineLocationName,
     setCameraReady,
     setCurrentScreen,
     setSelectedConstellationId,
+    setDragCalibrationTemp,
+    shouldShowLocationFallbackModal,
+    toggleGuidedTour,
     visibleConstellations,
   } = useAppContentState();
+
+  useReticleChime(currentScreen === 'ar' ? reticleTargetConstellation : null);
 
   return (
     <View style={[styles.root, { backgroundColor: theme.black }]}>
@@ -65,10 +86,13 @@ function AppContent() {
         onPermissionDenied={() => setCameraReady(false)}
       />
       <AROverlayContainer
-        isVisible={cameraReady && currentScreen === 'ar'}
+        isVisible={cameraReady && (currentScreen === 'ar' || currentScreen === 'drag_align')}
         isInfoPanelOpen={isInfoPanelOpen}
+        guidedTarget={guidedTargetConstellation}
+        focusedConstellationId={focusedConstellationId}
         selectedConstellationId={selectedConstellationId}
         constellations={visibleConstellations}
+        solarSystemObjects={projectedSolarSystemObjects}
         onSelectConstellation={setSelectedConstellationId}
       />
       <HUDContainer
@@ -94,7 +118,29 @@ function AppContent() {
         location={location}
         effectiveLocation={effectiveLocation}
         locationErrorKind={locationErrorKind}
+        locationSource={locationSource}
+        selectedOfflineLocationName={selectedOfflineLocationName}
+        isGuidedTourOpen={isGuidedTourOpen}
         onOpenCalibration={openCalibration}
+        onOpenDragAlign={() => {
+          setSelectedConstellationId(null);
+          setCurrentScreen('drag_align');
+        }}
+        onToggleGuidedTour={toggleGuidedTour}
+      />
+      <GuidedTourPanel
+        isOpen={isGuidedTourOpen}
+        items={guidedTourItems}
+        selectedTargetId={focusedConstellationId}
+        bottomOffset={layout.bottomSafeOffset + 84}
+        horizontalPadding={layout.horizontalPadding}
+        onClose={closeGuidedTour}
+        onSelect={selectGuidedTourTarget}
+      />
+      <LocationFallbackModal
+        isVisible={shouldShowLocationFallbackModal}
+        options={offlineLocationOptions}
+        onSelect={selectOfflineLocation}
       />
       {currentScreen === 'ar' ? (
         <ConstellationInfo
@@ -111,6 +157,17 @@ function AppContent() {
           currentPitch={effectiveOrientation.pitch}
           onSave={handleSaveCalibration}
           onCancel={() => setCurrentScreen('ar')}
+        />
+      ) : null}
+      {currentScreen === 'drag_align' ? (
+        <DragAlignOverlay
+          currentCalibration={effectiveCalibration}
+          setDragCalibrationTemp={setDragCalibrationTemp}
+          onSave={handleSaveCalibration}
+          onCancel={() => {
+            setDragCalibrationTemp(null);
+            setCurrentScreen('ar');
+          }}
         />
       ) : null}
     </View>

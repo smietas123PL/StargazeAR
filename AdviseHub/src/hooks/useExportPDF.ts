@@ -40,6 +40,24 @@ export function useExportPDF() {
         backgroundColor: '#001f2e',
         logging: false,
         windowWidth: 800,
+        onclone: (clonedDoc) => {
+          // Fix for html2canvas not supporting oklch/oklab colors
+          const elements = clonedDoc.getElementsByTagName('*');
+          for (let i = 0; i < elements.length; i++) {
+            const el = elements[i] as HTMLElement;
+            const style = window.getComputedStyle(el);
+            
+            // If the element has oklch/oklab in backgroundColor or color, 
+            // the browser's getComputedStyle usually returns it as rgb() anyway,
+            // so we just explicitly set it to avoid the parser error.
+            if (style.backgroundColor.includes('oklch') || style.backgroundColor.includes('oklab')) {
+               el.style.backgroundColor = 'rgba(0,0,0,0)'; // Fallback to transparent for problematic bgs
+            }
+            if (style.color.includes('oklch') || style.color.includes('oklab')) {
+               el.style.color = '#ffffff'; // Fallback to white for problematic text
+            }
+          }
+        }
       });
 
       const imgData = canvas.toDataURL('image/png');

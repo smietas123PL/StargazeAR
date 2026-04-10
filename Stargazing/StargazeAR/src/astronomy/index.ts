@@ -1,5 +1,6 @@
 import { CONSTELLATIONS } from './catalog';
 import { atmosphericRefraction, raDecToAltAz } from './coordinates';
+export * from './ephemeris';
 import { localSiderealTime } from './sidereal';
 import { altAzToScreenXY } from '../utils/projection';
 import type {
@@ -131,6 +132,8 @@ export function computeVisibleConstellations(params: {
       return {
         star,
         screen: { x: screen.x, y: screen.y },
+        altitude: starSky.alt,
+        azimuth: starSky.az,
         isVisible: screen.isVisible && starSky.alt > -5,
       };
     });

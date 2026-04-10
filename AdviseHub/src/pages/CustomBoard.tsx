@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCustomAdvisors, AdvisorDef } from '../hooks/useCustomAdvisors';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -111,7 +112,7 @@ export default function CustomBoard() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         {allAdvisors.map((advisor) => (
           <Card key={advisor.id} className="bg-surface-container-low/60 backdrop-blur-xl border-white/5 overflow-hidden relative group flex flex-col">
             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${advisor.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
@@ -155,6 +156,23 @@ export default function CustomBoard() {
             </div>
           </Card>
         ))}
+      </div>
+
+      <div className="bg-surface-container-low/40 border border-white/5 rounded-3xl p-8">
+        <h2 className="text-xl font-headline font-bold text-white mb-4">Odkryj szablony</h2>
+        <p className="text-zinc-400 text-sm mb-6">
+          Nie wiesz kogo dodać? Skorzystaj z gotowych zestawów doradców lub przejrzyj marketplace.
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <Link to="/marketplace" className="flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+            <span className="material-symbols-outlined text-xl">storefront</span>
+            Marketplace Doradców
+          </Link>
+          <Link to="/templates" className="flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+            <span className="material-symbols-outlined text-xl">view_carousel</span>
+            Szablony Rad
+          </Link>
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

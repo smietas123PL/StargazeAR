@@ -23,7 +23,11 @@ import { pisces } from './pisces';
 import { pegasus } from './pegasus';
 import { canis_minor } from './canis-minor';
 import { corona_borealis } from './corona-borealis';
+import { sagittarius } from './sagittarius';
+import { capricornus } from './capricornus';
 export const CONSTELLATIONS: ConstellationData[] = [
+  sagittarius,
+  capricornus,
   corona_borealis,
   canis_minor,
   pegasus,

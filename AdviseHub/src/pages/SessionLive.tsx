@@ -37,8 +37,18 @@ export default function SessionLive() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevStatusRef = useRef<string | undefined>(undefined);
   const prevParticipantsRef = useRef<string[] | undefined>(undefined);
+  const initializedMessages = useRef<Set<string>>(new Set());
 
   const [participantNames, setParticipantNames] = useState<Record<string, string>>({});
+
+  // Mark messages as initialized after render
+  useEffect(() => {
+    if (messages.length > 0) {
+      messages.forEach(msg => {
+        if (msg.id) initializedMessages.current.add(msg.id);
+      });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (session?.participants) {
@@ -340,7 +350,11 @@ export default function SessionLive() {
             <div className="flex flex-col gap-6">
               {advisorMsgs.map(msg => (
                 <div key={msg.id} className="self-start w-full">
-                  <AdvisorCard role={msg.role} content={msg.content} />
+                  <AdvisorCard 
+                    role={msg.role} 
+                    content={msg.content} 
+                    isNew={!initializedMessages.current.has(msg.id)}
+                  />
                 </div>
               ))}
             </div>
@@ -447,6 +461,27 @@ export default function SessionLive() {
               <span>Oczekiwanie na uruchomienie rady przez właściciela sesji...</span>
             </div>
           </div>
+        )}
+
+        {/* Verdict Teaser */}
+        {(session.status === 'peer_review_completed' || isChairmanRunning) && !chairmanVerdictMsg && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="self-center w-full max-w-3xl my-8 p-6 bg-gradient-to-r from-primary/5 to-transparent border border-primary/20 rounded-3xl flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0 animate-pulse">
+              <span className="material-symbols-outlined text-primary">gavel</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-primary uppercase tracking-wider mb-1">
+                Chairman analizuje obrady
+              </p>
+              <p className="text-zinc-400 text-sm">
+                Synteza {activeAdvisors.length} perspektyw + Peer Review → ostateczny werdykt gotowy za chwilę...
+              </p>
+            </div>
+          </motion.div>
         )}
 
         {/* Loading State / Progress (Council, Peer Review, Chairman) */}

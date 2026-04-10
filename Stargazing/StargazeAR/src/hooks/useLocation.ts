@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 
+import { loadLastKnownLocation, saveLastKnownLocation } from '../storage/locationStorage';
+
 import type { LocationErrorKind, UserLocation } from '../types';
 
 type UseLocationResult = {
@@ -9,26 +11,92 @@ type UseLocationResult = {
   errorKind: LocationErrorKind | null;
   isLoading: boolean;
   isHighAccuracyEnabled: boolean;
+  isUsingCachedLocation: boolean;
+  shouldPromptForOfflineFallback: boolean;
 };
 
-/**
- * Hook odpowiedzialny za pobranie bieżącej lokalizacji użytkownika.
- *
- * Nie ustawia żadnej lokalizacji fallback wewnątrz hooka.
- * Decyzję o fallbacku podejmuje warstwa wyżej.
- */
+const INITIAL_LOCATION_TIMEOUT_MS = 5000;
+
+function normalizeLocation(
+  position:
+    | Pick<Location.LocationObject, 'coords' | 'timestamp'>
+    | {
+        coords: {
+          latitude: number;
+          longitude: number;
+          altitude?: number | null;
+        };
+        timestamp?: number;
+      },
+): UserLocation {
+  return {
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+    altitude: position.coords.altitude ?? null,
+    timestamp: position.timestamp ?? Date.now(),
+  };
+}
+
+function createTimeoutResult() {
+  return new Promise<{ type: 'timeout' }>((resolve) => {
+    const timeoutId = setTimeout(() => {
+      clearTimeout(timeoutId);
+      resolve({ type: 'timeout' });
+    }, INITIAL_LOCATION_TIMEOUT_MS);
+  });
+}
+
 export default function useLocation(): UseLocationResult {
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [errorKind, setErrorKind] = useState<LocationErrorKind | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isHighAccuracyEnabled, setIsHighAccuracyEnabled] =
     useState<boolean>(false);
+  const [isUsingCachedLocation, setIsUsingCachedLocation] =
+    useState<boolean>(false);
+  const [shouldPromptForOfflineFallback, setShouldPromptForOfflineFallback] =
+    useState<boolean>(false);
   const subscriptionRef = useRef<Location.LocationSubscription | null>(null);
+  const hasResolvedLocationRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
+    function applyLiveLocation(nextLocation: UserLocation) {
+      if (!isMounted) {
+        return;
+      }
+
+      hasResolvedLocationRef.current = true;
+      setLocation(nextLocation);
+      setErrorKind(null);
+      setIsLoading(false);
+      setIsUsingCachedLocation(false);
+      setShouldPromptForOfflineFallback(false);
+      void saveLastKnownLocation(nextLocation).catch(() => {
+        // Cache write errors should not break the live location flow.
+      });
+    }
+
+    function applyCachedLocation(
+      cachedLocation: UserLocation,
+      nextErrorKind: LocationErrorKind,
+    ) {
+      if (!isMounted) {
+        return;
+      }
+
+      hasResolvedLocationRef.current = true;
+      setLocation(cachedLocation);
+      setErrorKind(nextErrorKind);
+      setIsLoading(false);
+      setIsUsingCachedLocation(true);
+      setShouldPromptForOfflineFallback(false);
+    }
+
     async function loadLocation() {
+      const cachedLocation = await loadLastKnownLocation();
+
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
 
@@ -37,9 +105,13 @@ export default function useLocation(): UseLocationResult {
         }
 
         if (status !== 'granted') {
-          setLocation(null);
-          setErrorKind('permission_denied');
-          setIsLoading(false);
+          if (cachedLocation) {
+            applyCachedLocation(cachedLocation, 'permission_denied');
+          } else {
+            setLocation(null);
+            setErrorKind('permission_denied');
+            setIsLoading(false);
+          }
           return;
         }
 
@@ -57,56 +129,78 @@ export default function useLocation(): UseLocationResult {
           }
         }
 
-        if (isMounted && !location) {
-          try {
-            const initialPosition = await Location.getCurrentPositionAsync({
-              accuracy: Location.Accuracy.Balanced,
-            });
-            if (isMounted) {
-              setLocation({
-                latitude: initialPosition.coords.latitude,
-                longitude: initialPosition.coords.longitude,
-                altitude: initialPosition.coords.altitude ?? null,
-                timestamp: initialPosition.timestamp ?? Date.now(),
-              });
-              setErrorKind(null);
-              setIsLoading(false);
-            }
-          } catch {
-            // Ignore failure here, watchPositionAsync might still succeed
-          }
-        }
-
-        const locationSubscription = await Location.watchPositionAsync(
-          {
+        const initialResult = await Promise.race([
+          Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.Balanced,
-            timeInterval: 10000,
-            distanceInterval: 10,
-          },
-          (currentPosition: Location.LocationObject) => {
-            if (!isMounted) {
-              return;
-            }
-
-            setLocation({
-              latitude: currentPosition.coords.latitude,
-              longitude: currentPosition.coords.longitude,
-              altitude: currentPosition.coords.altitude ?? null,
-              timestamp: currentPosition.timestamp ?? Date.now(),
-            });
-            setErrorKind(null);
-            setIsLoading(false);
-          }
-        );
+          })
+            .then((position) => ({
+              type: 'success' as const,
+              position,
+            }))
+            .catch(() => ({
+              type: 'error' as const,
+            })),
+          createTimeoutResult(),
+        ]);
 
         if (!isMounted) {
-          locationSubscription.remove();
-        } else {
-          subscriptionRef.current = locationSubscription;
+          return;
         }
 
+        if (initialResult.type === 'success') {
+          applyLiveLocation(normalizeLocation(initialResult.position));
+        } else if (initialResult.type === 'timeout') {
+          if (cachedLocation) {
+            applyCachedLocation(cachedLocation, 'timeout');
+          } else {
+            setLocation(null);
+            setErrorKind('timeout');
+            setIsLoading(false);
+            setShouldPromptForOfflineFallback(true);
+          }
+        } else if (cachedLocation) {
+          applyCachedLocation(cachedLocation, 'location_failed');
+        } else {
+          setLocation(null);
+          setErrorKind('location_failed');
+          setIsLoading(false);
+        }
+
+        try {
+          const locationSubscription = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Balanced,
+              timeInterval: 10000,
+              distanceInterval: 10,
+            },
+            (currentPosition: Location.LocationObject) => {
+              applyLiveLocation(normalizeLocation(currentPosition));
+            },
+          );
+
+          if (!isMounted) {
+            locationSubscription.remove();
+          } else {
+            subscriptionRef.current = locationSubscription;
+          }
+        } catch {
+          if (!isMounted || hasResolvedLocationRef.current || cachedLocation) {
+            return;
+          }
+
+          setLocation(null);
+          setErrorKind((previous) =>
+            previous === 'timeout' ? previous : 'location_failed',
+          );
+          setIsLoading(false);
+        }
       } catch {
         if (!isMounted) {
+          return;
+        }
+
+        if (cachedLocation) {
+          applyCachedLocation(cachedLocation, 'location_failed');
           return;
         }
 
@@ -129,5 +223,7 @@ export default function useLocation(): UseLocationResult {
     errorKind,
     isLoading,
     isHighAccuracyEnabled,
+    isUsingCachedLocation,
+    shouldPromptForOfflineFallback,
   };
 }

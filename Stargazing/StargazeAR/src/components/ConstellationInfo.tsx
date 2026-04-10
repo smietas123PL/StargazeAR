@@ -14,7 +14,8 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { ZIndex } from '../constants/zIndex';
 import { isConstellationInSeason } from '../astronomy/seasons';
-import type { ProjectedConstellation, Star } from '../types';
+import { getVisibilityWarning, type VisibilityWarning } from '../astronomy/visibility';
+import type { ProjectedConstellation, Star, ProjectedStar } from '../types';
 import type { GestureResponderEvent, PanResponderGestureState } from 'react-native';
 
 type ConstellationInfoProps = {
@@ -64,6 +65,24 @@ function getBrightestStar(stars: Star[]) {
   return stars.reduce((currentBrightest, star) =>
     star.magnitude < currentBrightest.magnitude ? star : currentBrightest,
   );
+}
+
+function getVisibilityWarningCopy(visibilityWarning: VisibilityWarning) {
+  if (visibilityWarning === 'very_low') {
+    return {
+      title: 'Bardzo nisko nad horyzontem',
+      body: 'Konstelacja jest aktualnie poniżej 5° — silna refrakcja atmosferyczna i przeszkody terenowe praktycznie uniemożliwiają obserwację.',
+    };
+  }
+
+  if (visibilityWarning === 'low') {
+    return {
+      title: 'Nisko nad horyzontem',
+      body: 'Konstelacja jest aktualnie między 5° a 15° — obserwacja utrudniona przez atmosferę. Najlepiej próbować przy dobrej przejrzystości powietrza.',
+    };
+  }
+
+  return null;
 }
 
 export default function ConstellationInfo({
@@ -223,7 +242,7 @@ export default function ConstellationInfo({
   }, [contentOpacity, displayedSelected, isOpen, selected]);
 
   const visibleStarsCount = displayedSelected
-    ? displayedSelected.projectedStars.filter((star: any) => star.isVisible).length
+    ? displayedSelected.projectedStars.filter((star: ProjectedStar) => star.isVisible).length
     : 0;
   const brightestStar = useMemo(
     () =>
@@ -241,6 +260,10 @@ export default function ConstellationInfo({
   const seasons = displayedSelected?.data.season;
   const seasonPl = seasons && seasons.length > 0 ? seasons.join(', ') : null;
   const isInSeason = displayedSelected ? isConstellationInSeason(displayedSelected.data) : false;
+  const visibilityWarning = displayedSelected
+    ? getVisibilityWarning(displayedSelected.altitude)
+    : null;
+  const visibilityWarningCopy = getVisibilityWarningCopy(visibilityWarning);
   const bottomPadding = Math.max(insets.bottom, 0) + 12;
 
   return (
@@ -398,6 +421,17 @@ export default function ConstellationInfo({
               </View>
             </View>
 
+            {visibilityWarningCopy ? (
+              <View accessibilityRole="text" style={styles.visibilityWarning}>
+                <Text style={[styles.visibilityWarningTitle, { color: theme.warningTitle }]}>
+                  {visibilityWarningCopy.title}
+                </Text>
+                <Text style={[styles.visibilityWarningBody, { color: theme.warningBody }]}>
+                  {visibilityWarningCopy.body}
+                </Text>
+              </View>
+            ) : null}
+
             {description ? (
               <View style={styles.descriptionSection}>
                 <Text style={[styles.description, { color: theme.sheetDescription }]}>
@@ -494,6 +528,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 2,
+  },
+  visibilityWarning: {
+    marginTop: 10,
+  },
+  visibilityWarningTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  visibilityWarningBody: {
+    fontSize: 12,
+    lineHeight: 18,
   },
   statsColumn: {
     flex: 1,
