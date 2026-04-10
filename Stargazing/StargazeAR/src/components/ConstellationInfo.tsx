@@ -98,6 +98,7 @@ export default function ConstellationInfo({
   const contentOpacity = useRef(new Animated.Value(1)).current;
   const [displayedSelected, setDisplayedSelected] =
     useState<ProjectedConstellation | null>(selected);
+  const [isRendered, setIsRendered] = useState(isOpen);
 
   const stateRef = useRef({ isOpen, onClose });
 
@@ -165,8 +166,6 @@ export default function ConstellationInfo({
     [opacity, translateY],
   );
 
-  const [isRendered, setIsRendered] = useState(isOpen);
-
   useEffect(() => {
     if (isOpen) {
       setIsRendered(true);
@@ -175,7 +174,7 @@ export default function ConstellationInfo({
     Animated.parallel([
       Animated.timing(translateY, {
         toValue: isOpen ? 0 : CLOSE_TRANSLATE_Y,
-        duration: isOpen ? 220 : 220,
+        duration: 220,
         easing: isOpen ? Easing.out(Easing.quad) : Easing.in(Easing.quad),
         useNativeDriver: true,
       }),
@@ -190,10 +189,6 @@ export default function ConstellationInfo({
       }
     });
   }, [isOpen, opacity, translateY]);
-
-  if (!isRendered) {
-    return null;
-  }
 
   useEffect(() => {
     if (!selected) {
@@ -259,6 +254,10 @@ export default function ConstellationInfo({
     : null;
   const visibilityWarningCopy = getVisibilityWarningCopy(visibilityWarning);
   const bottomPadding = Math.max(insets.bottom, 0) + 12;
+
+  if (!isRendered) {
+    return null;
+  }
 
   return (
     <Animated.View

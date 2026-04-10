@@ -3,28 +3,12 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "moduleResolution": "bundler",
     "paths": {
-      "expo": [
-        "src/types/shims/expo.d.ts"
-      ],
-      "expo-status-bar": [
-        "src/types/shims/expo-status-bar.d.ts"
-      ],
-      "expo-camera": [
-        "src/types/shims/expo-camera.d.ts"
-      ],
-      "expo-location": [
-        "src/types/shims/expo-location.d.ts"
-      ],
-      "expo-sensors": [
-        "src/types/shims/expo-sensors.d.ts"
-      ],
       "@/*": [
         "src/*"
       ]
     },
-    "types": []
+    "jsx": "react-native"
   },
   "include": [
     "App.tsx",
@@ -34,11 +18,6 @@
     "src/**/*.tsx"
   ],
   "exclude": [
-    "app",
-    "components",
-    "hooks",
-    "constants",
-    "scripts",
     "stargazear_old",
     "node_modules"
   ],
