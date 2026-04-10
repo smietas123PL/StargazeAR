@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -23,7 +23,7 @@ type GuidedTourPanelProps = {
   onSelect: (id: string) => void;
 };
 
-const HIDDEN_TRANSLATE_Y = 140;
+const HIDDEN_TRANSLATE_Y = 200;
 
 export default function GuidedTourPanel({
   isOpen,
@@ -37,8 +37,13 @@ export default function GuidedTourPanel({
   const { theme } = useTheme();
   const translateY = useRef(new Animated.Value(HIDDEN_TRANSLATE_Y)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const [isRendered, setIsRendered] = useState(isOpen);
 
   useEffect(() => {
+    if (isOpen) {
+      setIsRendered(true);
+    }
+
     Animated.parallel([
       Animated.timing(translateY, {
         toValue: isOpen ? 0 : HIDDEN_TRANSLATE_Y,
@@ -50,8 +55,16 @@ export default function GuidedTourPanel({
         duration: isOpen ? 220 : 160,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(({ finished }) => {
+      if (finished && !isOpen) {
+        setIsRendered(false);
+      }
+    });
   }, [isOpen, opacity, translateY]);
+
+  if (!isRendered) {
+    return null;
+  }
 
   return (
     <Animated.View
