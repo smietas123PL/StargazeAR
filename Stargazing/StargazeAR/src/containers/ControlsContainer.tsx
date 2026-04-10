@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -27,7 +27,7 @@ type ControlsContainerProps = {
   isGuidedTourOpen: boolean;
   isInfoPanelOpen: boolean;
   isLocationLoading: boolean;
-  location: UserLocation | null;
+  cachedLocationTimestamp: number | null;
   effectiveLocation: UserLocation;
   locationErrorKind: LocationErrorKind | null;
   locationSource: LocationSource;
@@ -78,14 +78,14 @@ function getLocationBannerCopy(params: {
   };
 }
 
-export default function ControlsContainer({
+function ControlsContainer({
   currentScreen,
   layout,
   isMockEnabled,
   isGuidedTourOpen,
   isInfoPanelOpen,
   isLocationLoading,
-  location,
+  cachedLocationTimestamp,
   effectiveLocation,
   locationErrorKind,
   locationSource,
@@ -222,14 +222,14 @@ export default function ControlsContainer({
             {locationSubtitle} ({effectiveLocation.latitude.toFixed(4)},{' '}
             {effectiveLocation.longitude.toFixed(4)})
           </Text>
-          {locationSource === 'cache' && location ? (
+          {locationSource === 'cache' && cachedLocationTimestamp ? (
             <Text
               style={[
                 styles.locationBannerFootnote,
                 { color: theme.locationBannerText },
               ]}
             >
-              Ostatni zapis: {new Date(location.timestamp).toLocaleTimeString('pl-PL')}
+              Ostatni zapis: {new Date(cachedLocationTimestamp).toLocaleTimeString('pl-PL')}
             </Text>
           ) : null}
         </View>
@@ -513,3 +513,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
+
+export default memo(ControlsContainer);

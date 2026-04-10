@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 
 import {
   hasSeenOnboarding,
@@ -14,7 +14,7 @@ type OnboardingMessageVariant = 'default' | 'calibration';
 
 type UseOnboardingParams = {
   isArSessionActive: boolean;
-  wasArSessionActiveRef: RefObject<boolean>;
+  wasArSessionActiveRef: MutableRefObject<boolean>;
   heading: number;
   pitch: number;
   roll: number;

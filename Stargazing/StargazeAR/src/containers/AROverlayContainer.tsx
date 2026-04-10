@@ -51,7 +51,6 @@ export default function AROverlayContainer({
   }
 
   function handleConstellationPress(id: string) {
-    void tapLight();
     onSelectConstellation(id);
   }
 

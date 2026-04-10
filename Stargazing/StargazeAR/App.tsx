@@ -115,7 +115,7 @@ function AppContent() {
         isMockEnabled={isMockEnabled}
         isInfoPanelOpen={isInfoPanelOpen}
         isLocationLoading={isLocationLoading}
-        location={location}
+        cachedLocationTimestamp={locationSource === 'cache' ? location?.timestamp ?? null : null}
         effectiveLocation={effectiveLocation}
         locationErrorKind={locationErrorKind}
         locationSource={locationSource}
